@@ -1,0 +1,58 @@
+//暴力 TLE
+class Solution {
+public:
+    int minSubArrayLen(int target, vector<int>& nums) {
+        int res = INT32_MAX;//最短子序列长度
+        int sum = 0;//子序列的总和
+        for(int i=0; i < nums.size(); i++)
+        {
+            sum = 0;
+            for(int j = i; j < nums.size(); j++)
+            {
+                sum += nums[j];
+                if(sum >= target)
+                {
+                    res = res < j - i + 1 ? res : j - i + 1;//三目 条件 ？ 成立 ：否定
+                    break;
+                }
+            }
+        }
+
+        return res == INT32_MAX ? 0 : res;
+
+    }
+};
+
+//acwing 滑动窗口 n队列长度 k滑动窗口长度 找序列中窗口内的最小值
+   int hh = 0, tt = -1;//队列头 队列尾  | tt     hh | q[]存下标
+    for (int i = 0; i < n; i ++ )
+    {
+        if (hh <= tt && i - k + 1 > q[hh]) hh ++ ;//队头弹出 窗口长度已满
+
+        while (hh <= tt && a[q[tt]] >= a[i]) tt -- ;//队尾插入 满足条件时插入
+        q[ ++ tt] = i;
+
+        if (i >= k - 1) printf("%d ", a[q[hh]]);//窗口填满 可以输出
+    }
+
+
+class Solution {
+public:
+    int minSubArrayLen(int target, vector<int>& nums) {
+        int res = INT32_MAX;
+        int sum=0;//窗口内总和
+        int i=0;//滑动窗口左边界
+        for(int j = 0; j < nums.size(); j++)//滑动窗口右边界 滚动更新 
+        {
+            sum += nums[j];
+            while(sum >= target)
+            {
+                res = res < j - i + 1 ? res : j - i + 1;
+                sum -= nums[i++];//满足记录后 弹出左边界
+            }
+        }
+
+        return res == INT32_MAX ? 0 : res;
+        
+    }
+};
