@@ -1,23 +1,17 @@
+//在掐头去尾后的双倍字符串里还能再看到原字符串，就说明原串必然是周期串。
 class Solution {
 public:
-    
-    int strStr(string haystack, string needle) {
-        if( needle.size() == 0) { return 0; }
-
-        vector<int> next(needle.size());
-        getNext(&next[0],needle);
-        int j = -1;
-        for(int i = 0; i < haystack.size(); i++){
-            while(j >= 0 && haystack[i] != needle[j+1]){ j = next[j];}
-            if( haystack[i] == needle[j+1] ) {j++;}
-            if( j == (needle.size() - 1) ) { return (i - needle.size() + 1);}
-        }
-
-        return -1;
-
+    bool repeatedSubstringPattern(string s) {
+        string t = s + s;
+        t.erase(t.begin()); // 掐头去尾
+        t.erase(t.end() - 1); //注意这里是end() - 1 
+        if (t.find(s) != std::string::npos) return true; // r
+        return false;
     }
 };
 
+//kmp len = s.size()   k = next[len - 1] + 1   // 最长前缀后缀长度
+//若 k > 0 且 len % (len - k) == 0，则字符串可整除成若干段，每段长度为 len - k，即为周期。
 class Solution {
 public:
     void getNext(int* next, const string& s){
