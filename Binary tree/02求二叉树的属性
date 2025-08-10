@@ -1,0 +1,257 @@
+//求二叉树的属性
+//101. 对称二叉树
+class Solution {
+public:
+    bool compare(TreeNode* left, TreeNode* right) {
+        // 首先排除空节点的情况
+        if (left == NULL && right != NULL) return false;
+        else if (left != NULL && right == NULL) return false;
+        else if (left == NULL && right == NULL) return true;
+        // 排除了空节点，再排除数值不相同的情况
+        else if (left->val != right->val) return false;
+
+        // 此时就是：左右节点都不为空，且数值相同的情况
+        // 此时才做递归，做下一层的判断
+        bool outside = compare(left->left, right->right);   // 左子树：左、 右子树：右
+        bool inside = compare(left->right, right->left);    // 左子树：右、 右子树：左
+        bool isSame = outside && inside;                    // 左子树：中、 右子树：中 （逻辑处理）
+        return isSame;
+
+    }
+    bool isSymmetric(TreeNode* root) {
+        if (root == NULL) return true;
+        return compare(root->left, root->right);
+    }
+};
+
+//104最大深度
+
+//111最小深度
+
+//222.完全二叉树的节点个数
+// 版本一
+class Solution {
+private:
+    int getNodesNum(TreeNode* cur) {
+        if (cur == NULL) return 0;
+        int leftNum = getNodesNum(cur->left);      // 左
+        int rightNum = getNodesNum(cur->right);    // 右
+        int treeNum = leftNum + rightNum + 1;      // 中
+        return treeNum;
+    }
+public:
+    int countNodes(TreeNode* root) {
+        return getNodesNum(root);
+    }
+};
+
+// 版本二 精简版
+class Solution {
+public:
+    int countNodes(TreeNode* root) {
+        if (root == NULL) return 0;
+        return 1 + countNodes(root->left) + countNodes(root->right);
+    }
+};
+
+//110.平衡二叉树
+class Solution {
+public:
+    // 返回以该节点为根节点的二叉树的高度，如果不是平衡二叉树了则返回-1
+    int getHeight(TreeNode* node) {
+        if (node == NULL) {
+            return 0;
+        }
+        int leftHeight = getHeight(node->left);
+        if (leftHeight == -1) return -1;
+        int rightHeight = getHeight(node->right);
+        if (rightHeight == -1) return -1;
+        return abs(leftHeight - rightHeight) > 1 ? -1 : 1 + max(leftHeight, rightHeight);
+    }
+    bool isBalanced(TreeNode* root) {
+        return getHeight(root) == -1 ? false : true;
+    }
+};
+
+//257. 二叉树的所有路径
+class Solution {
+private:
+
+    void traversal(TreeNode* cur, vector<int>& path, vector<string>& result) {
+        path.push_back(cur->val); // 中，中为什么写在这里，因为最后一个节点也要加入到path中 
+        // 这才到了叶子节点
+        if (cur->left == NULL && cur->right == NULL) {
+            string sPath;
+            for (int i = 0; i < path.size() - 1; i++) {
+                sPath += to_string(path[i]);
+                sPath += "->";
+            }
+            sPath += to_string(path[path.size() - 1]);
+            result.push_back(sPath);
+            return;
+        }
+        if (cur->left) { // 左 
+            traversal(cur->left, path, result);
+            path.pop_back(); // 回溯
+        }
+        if (cur->right) { // 右
+            traversal(cur->right, path, result);
+            path.pop_back(); // 回溯
+        }
+    }
+
+public:
+    vector<string> binaryTreePaths(TreeNode* root) {
+        vector<string> result;
+        vector<int> path;
+        if (root == NULL) return result;
+        traversal(root, path, result);
+        return result;
+    }
+};
+
+
+//精简版
+class Solution {
+private:
+    void traversal(TreeNode* cur, string path, vector<string>& result) {
+        path += to_string(cur->val); // 中，中为什么写在这里，因为最后一个节点也要加入到path中
+        if (cur->left == NULL && cur->right == NULL) {
+            result.push_back(path);
+            return;
+        }
+        if (cur->left) {
+            path += "->";
+            traversal(cur->left, path, result); // 左
+            path.pop_back(); // 回溯 '>'
+            path.pop_back(); // 回溯 '-'
+        }
+        if (cur->right) {
+            path += "->";
+            traversal(cur->right, path, result); // 右
+            path.pop_back(); // 回溯'>'
+            path.pop_back(); // 回溯 '-'
+        }
+    }
+
+public:
+    vector<string> binaryTreePaths(TreeNode* root) {
+        vector<string> result;
+        string path;
+        if (root == NULL) return result;
+        traversal(root, path, result);
+        return result;
+
+    }
+};
+
+//404.左叶子之和
+class Solution {
+public:
+    int sumOfLeftLeaves(TreeNode* root) {
+        if (root == NULL) return 0;
+        if (root->left == NULL && root->right== NULL) return 0;
+
+        int leftValue = sumOfLeftLeaves(root->left);    // 左
+        if (root->left && !root->left->left && !root->left->right) { // 左子树就是一个左叶子的情况
+            leftValue = root->left->val;
+        }
+        int rightValue = sumOfLeftLeaves(root->right);  // 右
+
+        int sum = leftValue + rightValue;               // 中
+        return sum;
+    }
+};
+//精简版
+class Solution {
+public:
+    int sumOfLeftLeaves(TreeNode* root) {
+        if (root == NULL) return 0;
+        int leftValue = 0;
+        if (root->left != NULL && root->left->left == NULL && root->left->right == NULL) {
+            leftValue = root->left->val;
+        }
+        return leftValue + sumOfLeftLeaves(root->left) + sumOfLeftLeaves(root->right);
+    }
+};
+
+//513左下角
+
+//112. 路径总和
+class Solution {
+private:
+    bool traversal(TreeNode* cur, int count) {//传入的cnt是扣除root val
+        if (!cur->left && !cur->right && count == 0) return true; // 遇到叶子节点，并且计数为0
+        if (!cur->left && !cur->right) return false; // 遇到叶子节点直接返回
+
+    if (cur->left) { // 左 （空节点不遍历）
+    // 遇到叶子节点返回true，则直接返回true
+    if (traversal(cur->left, count - cur->left->val)) return true; // 注意这里有回溯的逻辑
+    }
+    if (cur->right) { // 右 （空节点不遍历）
+    // 遇到叶子节点返回true，则直接返回true
+    if (traversal(cur->right, count - cur->right->val)) return true; // 注意这里有回溯的逻辑
+    }
+    return false;
+    }
+
+public:
+    bool hasPathSum(TreeNode* root, int sum) {
+        if (root == NULL) return false;
+        return traversal(root, sum - root->val);
+    }
+};
+
+//精简版
+class Solution {
+public:
+    bool hasPathSum(TreeNode* root, int sum) {//这里的sum未扣除root val
+        if (!root) return false;
+        if (!root->left && !root->right && sum == root->val) {
+            return true;
+        }
+        return hasPathSum(root->left, sum - root->val) || hasPathSum(root->right, sum - root->val);
+    }
+};
+
+//113. 路径总和ii 返回路径
+class solution {
+private:
+    vector<vector<int>> result;
+    vector<int> path;
+    // 递归函数不需要返回值，因为我们要遍历整个树
+    void traversal(TreeNode* cur, int count) {
+        if (!cur->left && !cur->right && count == 0) { // 遇到了叶子节点且找到了和为sum的路径
+            result.push_back(path);
+            return;
+        }
+
+        if (!cur->left && !cur->right) return ; // 遇到叶子节点而没有找到合适的边，直接返回
+
+        if (cur->left) { // 左 （空节点不遍历）
+            path.push_back(cur->left->val);
+            count -= cur->left->val;
+            traversal(cur->left, count);    // 递归
+            count += cur->left->val;        // 回溯
+            path.pop_back();                // 回溯
+        }
+        if (cur->right) { // 右 （空节点不遍历）
+            path.push_back(cur->right->val);
+            count -= cur->right->val;
+            traversal(cur->right, count);   // 递归
+            count += cur->right->val;       // 回溯
+            path.pop_back();                // 回溯
+        }
+        return ;
+    }
+
+public:
+    vector<vector<int>> pathSum(TreeNode* root, int sum) {
+        result.clear();
+        path.clear();
+        if (root == NULL) return result;
+        path.push_back(root->val); // 把根节点放进路径
+        traversal(root, sum - root->val);
+        return result;
+    }
+};

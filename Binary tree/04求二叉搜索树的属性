@@ -1,0 +1,154 @@
+//求二叉搜索树的属性
+//700.二叉搜索树中的搜索
+class Solution {
+public:
+    TreeNode* searchBST(TreeNode* root, int val) {
+        if(root == NULL || root -> val == val) return root;
+        if(root -> val < val) return searchBST(root -> right, val);
+        if(root -> val > val) return searchBST(root -> left, val);
+
+        return NULL;
+    }
+};
+
+//98.验证二叉搜索树
+//可以递归中序遍历将二叉搜索树转变成一个数组
+class Solution {
+private:
+    vector<int> vec;
+    void traversal(TreeNode* root) {
+        if (root == NULL) return;
+        traversal(root->left);
+        vec.push_back(root->val); // 将二叉搜索树转换为有序数组
+        traversal(root->right);
+    }
+public:
+    bool isValidBST(TreeNode* root) {
+        vec.clear(); // 不加这句在leetcode上也可以过，但最好加上
+        traversal(root);
+        for (int i = 1; i < vec.size(); i++) {
+            // 注意要小于等于，搜索树里不能有相同元素
+            if (vec[i] <= vec[i - 1]) return false;
+        }
+        return true;
+    }
+};
+
+//530.二叉搜索树的最小绝对差
+class Solution {
+private:
+    vector<int> vec;
+    void traversal(TreeNode* root) {
+        if (root == NULL) return;
+        traversal(root->left);
+        vec.push_back(root->val); // 将二叉搜索树转换为有序数组
+        traversal(root->right);
+    }
+public:
+    int getMinimumDifference(TreeNode* root) {
+        vec.clear(); // 不加这句在leetcode上也可以过，但最好加上
+        traversal(root);
+        if(vec.size() < 2) return 0;
+        int min_diff = INT_MAX;
+        for(int i = 1; i< vec.size(); i++) {
+            if( abs(vec[i - 1] - vec[i]) <= min_diff ) min_diff = abs(vec[i - 1] - vec[i]);
+        }
+
+        return min_diff;
+    }
+};
+
+//501.二叉搜索树中的众数
+//只能解决二叉搜索树（BST）的众数问题，因为它强烈依赖“中序遍历时相同值会连续出现”这一性质
+class Solution {
+private:
+    int maxCount = 0; // 最大频率
+    int count = 0; // 统计频率
+    TreeNode* pre = NULL;
+    vector<int> result;
+    void searchBST(TreeNode* cur) {
+        if (cur == NULL) return ;
+
+        searchBST(cur->left);       // 左
+                                    // 中
+        if (pre == NULL) { // 第一个节点
+            count = 1;
+        } else if (pre->val == cur->val) { // 与前一个节点数值相同
+            count++;
+        } else { // 与前一个节点数值不同
+            count = 1;
+        }
+        pre = cur; // 更新上一个节点
+
+        if (count == maxCount) { // 如果和最大值相同，放进result中
+            result.push_back(cur->val);
+        }
+
+        if (count > maxCount) { // 如果计数大于最大值频率
+            maxCount = count;   // 更新最大频率
+            result.clear();     // 很关键的一步，不要忘记清空result，之前result里的元素都失效了
+            result.push_back(cur->val);
+        }
+
+        searchBST(cur->right);      // 右
+        return ;
+    }
+
+public:
+    vector<int> findMode(TreeNode* root) {
+        result.clear();
+        searchBST(root);
+        return result;
+    }
+};
+
+//当不是二叉搜索树时
+class Solution {
+private:
+
+void searchBST(TreeNode* cur, unordered_map<int, int>& map) { // 前序遍历
+    if (cur == NULL) return ;
+    map[cur->val]++; // 统计元素频率
+    searchBST(cur->left, map);
+    searchBST(cur->right, map);
+    return ;
+}
+bool static cmp (const pair<int, int>& a, const pair<int, int>& b) {
+    return a.second > b.second;
+}
+public:
+    vector<int> findMode(TreeNode* root) {
+        unordered_map<int, int> map; // key:元素，value:出现频率
+        vector<int> result;
+        if (root == NULL) return result;
+        searchBST(root, map);
+        vector<pair<int, int>> vec(map.begin(), map.end());
+        sort(vec.begin(), vec.end(), cmp); // 给频率排个序
+        result.push_back(vec[0].first);
+        for (int i = 1; i < vec.size(); i++) {
+            // 取最高的放到result数组中
+            if (vec[i].second == vec[0].second) result.push_back(vec[i].first);
+            else break;
+        }
+        return result;
+    }
+};
+
+//538.把二叉搜索树转换为累加树
+class Solution {
+private:
+    int pre = 0; // 记录前一个节点的数值
+    void traversal(TreeNode* cur) { // 右中左遍历
+        if (cur == NULL) return;
+        traversal(cur->right);
+        cur->val += pre;
+        pre = cur->val;
+        traversal(cur->left);
+    }
+public:
+    TreeNode* convertBST(TreeNode* root) {
+        pre = 0;
+        traversal(root);
+        return root;
+    }
+};

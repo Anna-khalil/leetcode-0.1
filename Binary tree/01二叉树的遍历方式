@@ -1,0 +1,49 @@
+//DFS 递归
+
+//二叉树的遍历方式
+//前序遍历 中左右
+class Solution {
+public:
+    void traversal(TreeNode* cur, vector<int>& vec) {
+        if (cur == NULL) return;
+        vec.push_back(cur->val);    // 中
+        traversal(cur->left, vec);  // 左
+        traversal(cur->right, vec); // 右
+    }
+    vector<int> preorderTraversal(TreeNode* root) {
+        vector<int> result;
+        traversal(root, result);
+        return result;
+    }
+};
+
+//中序遍历 左中右
+void traversal(TreeNode* cur, vector<int>& vec) {
+    if (cur == NULL) return;
+    traversal(cur->left, vec);  // 左
+    vec.push_back(cur->val);    // 中
+    traversal(cur->right, vec); // 右
+}
+
+//后序遍历 左右中
+void traversal(TreeNode* cur, vector<int>& vec) {
+    if (cur == NULL) return;
+    traversal(cur->left, vec);  // 左
+    traversal(cur->right, vec); // 右
+    vec.push_back(cur->val);    // 中
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,52 @@
+//二叉树公共祖先问题
+//236. 二叉树的最近公共祖先
+class Solution {
+public:
+    TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
+        if (root == q || root == p || root == NULL) return root;
+        TreeNode* left = lowestCommonAncestor(root->left, p, q);
+        TreeNode* right = lowestCommonAncestor(root->right, p, q);
+        if (left != NULL && right != NULL) return root;
+        if (left == NULL) return right;
+        return left;
+    }
+};
+
+//235. 二叉搜索树的最近公共祖先
+class Solution {
+private:
+    TreeNode* traversal(TreeNode* cur, TreeNode* p, TreeNode* q) {
+        if (cur == NULL) return cur;
+                                                        // 中
+        if (cur->val > p->val && cur->val > q->val) {   // 左
+            TreeNode* left = traversal(cur->left, p, q);
+            if (left != NULL) {
+                return left;
+            }
+        }
+
+        if (cur->val < p->val && cur->val < q->val) {   // 右
+            TreeNode* right = traversal(cur->right, p, q);
+            if (right != NULL) {
+                return right;
+            }
+        }
+        return cur;
+    }
+public:
+    TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
+        return traversal(root, p, q);
+    }
+};
+
+//精简版
+class Solution {
+public:
+    TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
+        if (root->val > p->val && root->val > q->val) {
+            return lowestCommonAncestor(root->left, p, q);
+        } else if (root->val < p->val && root->val < q->val) {
+            return lowestCommonAncestor(root->right, p, q);
+        } else return root;
+    }
+};
