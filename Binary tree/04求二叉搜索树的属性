@@ -1,5 +1,6 @@
 //求二叉搜索树的属性
 //700.二叉搜索树中的搜索
+//1.1递归
 class Solution {
 public:
     TreeNode* searchBST(TreeNode* root, int val) {
@@ -10,8 +11,21 @@ public:
         return NULL;
     }
 };
+//2.1迭代
+class Solution {
+public:
+    TreeNode* searchBST(TreeNode* root, int val) {
+        while (root != NULL) {
+            if (root->val > val) root = root->left;
+            else if (root->val < val) root = root->right;
+            else return root;
+        }
+        return NULL;
+    }
+};
 
 //98.验证二叉搜索树
+//1.1递归
 //可以递归中序遍历将二叉搜索树转变成一个数组
 class Solution {
 private:
@@ -33,8 +47,34 @@ public:
         return true;
     }
 };
+//2.1迭代 看不懂
+//迭代法中序遍历稍加改动就可以了，代码如下：
+class Solution {
+public:
+    bool isValidBST(TreeNode* root) {
+        stack<TreeNode*> st;
+        TreeNode* cur = root;
+        TreeNode* pre = NULL; // 记录前一个节点
+        while (cur != NULL || !st.empty()) {
+            if (cur != NULL) {
+                st.push(cur);
+                cur = cur->left;                // 左
+            } else {
+                cur = st.top();                 // 中
+                st.pop();
+                if (pre != NULL && cur->val <= pre->val)
+                return false;
+                pre = cur; //保存前一个访问的结点
+
+                cur = cur->right;               // 右
+            }
+        }
+        return true;
+    }
+};
 
 //530.二叉搜索树的最小绝对差
+//1.1递归
 class Solution {
 private:
     vector<int> vec;
@@ -55,6 +95,31 @@ public:
         }
 
         return min_diff;
+    }
+};
+//2.1一种中序遍历的迭代法，代码如下：
+class Solution {
+public:
+    int getMinimumDifference(TreeNode* root) {
+        stack<TreeNode*> st;
+        TreeNode* cur = root;
+        TreeNode* pre = NULL;
+        int result = INT_MAX;
+        while (cur != NULL || !st.empty()) {
+            if (cur != NULL) { // 指针来访问节点，访问到最底层
+                st.push(cur); // 将访问的节点放进栈
+                cur = cur->left;                // 左
+            } else {
+                cur = st.top();
+                st.pop();
+                if (pre != NULL) {              // 中
+                    result = min(result, cur->val - pre->val);
+                }
+                pre = cur;
+                cur = cur->right;               // 右
+            }
+        }
+        return result;
     }
 };
 
@@ -135,6 +200,7 @@ public:
 };
 
 //538.把二叉搜索树转换为累加树
+//1.1递归
 class Solution {
 private:
     int pre = 0; // 记录前一个节点的数值
@@ -144,6 +210,33 @@ private:
         cur->val += pre;
         pre = cur->val;
         traversal(cur->left);
+    }
+public:
+    TreeNode* convertBST(TreeNode* root) {
+        pre = 0;
+        traversal(root);
+        return root;
+    }
+};
+//2.1迭代中序
+class Solution {
+private:
+    int pre; // 记录前一个节点的数值
+    void traversal(TreeNode* root) {
+        stack<TreeNode*> st;
+        TreeNode* cur = root;
+        while (cur != NULL || !st.empty()) {
+            if (cur != NULL) {
+                st.push(cur);
+                cur = cur->right;   // 右
+            } else {
+                cur = st.top();     // 中
+                st.pop();
+                cur->val += pre;
+                pre = cur->val;
+                cur = cur->left;    // 左
+            }
+        }
     }
 public:
     TreeNode* convertBST(TreeNode* root) {

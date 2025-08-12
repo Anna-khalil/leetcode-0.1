@@ -1,5 +1,6 @@
 //求二叉树的属性
 //101. 对称二叉树
+//1.0递归
 class Solution {
 public:
     bool compare(TreeNode* left, TreeNode* right) {
@@ -23,13 +24,208 @@ public:
         return compare(root->left, root->right);
     }
 };
+//2迭代
+//2.1queue
+class Solution {
+public:
+    bool isSymmetric(TreeNode* root) {
+        if (root == NULL) return true;
+        queue<TreeNode*> que;
+        que.push(root->left);   // 将左子树头结点加入队列
+        que.push(root->right);  // 将右子树头结点加入队列
+        
+        while (!que.empty()) {  // 接下来就要判断这两个树是否相互翻转
+            TreeNode* leftNode = que.front(); que.pop();
+            TreeNode* rightNode = que.front(); que.pop();
+            if (!leftNode && !rightNode) {  // 左节点为空、右节点为空，此时说明是对称的
+                continue;
+            }
+
+            // 左右一个节点不为空，或者都不为空但数值不相同，返回false
+            if ((!leftNode || !rightNode || (leftNode->val != rightNode->val))) {
+                return false;
+            }
+            que.push(leftNode->left);   // 加入左节点左孩子
+            que.push(rightNode->right); // 加入右节点右孩子
+            que.push(leftNode->right);  // 加入左节点右孩子
+            que.push(rightNode->left);  // 加入右节点左孩子
+        }
+        return true;
+    }
+};
+//2.2stack
+class Solution {
+public:
+    bool isSymmetric(TreeNode* root) {
+        if (root == NULL) return true;
+        stack<TreeNode*> st; // 这里改成了栈
+        st.push(root->left);
+        st.push(root->right);
+        while (!st.empty()) {
+            TreeNode* rightNode = st.top(); st.pop();
+            TreeNode* leftNode = st.top(); st.pop();
+            if (!leftNode && !rightNode) {
+                continue;
+            }
+            if ((!leftNode || !rightNode || (leftNode->val != rightNode->val))) {
+                return false;
+            }
+            st.push(leftNode->left);
+            st.push(rightNode->right);
+            st.push(leftNode->right);
+            st.push(rightNode->left);
+        }
+        return true;
+    }
+};
 
 //104最大深度
+//1.1递归
+class Solution {
+public:
+    int result;
+    void getdepth(TreeNode* node, int depth) {
+        result = depth > result ? depth : result; // 中
+        if (node->left == NULL && node->right == NULL) return ;
+        if (node->left) { // 左
+            getdepth(node->left, depth + 1);
+        }
+        if (node->right) { // 右
+            getdepth(node->right, depth + 1);
+        }
+        return ;
+    }
+    int maxDepth(TreeNode* root) {
+        result = 0;
+        if (root == 0) return result;
+        getdepth(root, 1);
+        return result;
+    }
+};
+//2.1迭代 层序遍历
+class Solution {
+public:
+    int maxDepth(TreeNode* root) {
+        if (root == NULL) return 0;
+        int depth = 0;
+        queue<TreeNode*> que;
+        que.push(root);
+        while(!que.empty()) {
+            int size = que.size();
+            depth++; // 记录深度
+            for (int i = 0; i < size; i++) {
+                TreeNode* node = que.front();
+                que.pop();
+                if (node->left) que.push(node->left);
+                if (node->right) que.push(node->right);
+            }
+        }
+        return depth;
+    }
+};
+
+//相关 n叉树的最大深度
+//1.1递归
+class Solution {
+public:
+    int maxDepth(Node* root) {
+        if (root == 0) return 0;
+        int depth = 0;
+        for (int i = 0; i < root->children.size(); i++) {
+            depth = max (depth, maxDepth(root->children[i]));
+        }
+        return depth + 1;
+    }
+};
+//2.1迭代
+class Solution {
+public:
+    int maxDepth(Node* root) {
+        queue<Node*> que;
+        if (root != NULL) que.push(root);
+        int depth = 0;
+        while (!que.empty()) {
+            int size = que.size();
+            depth++; // 记录深度
+            for (int i = 0; i < size; i++) {
+                Node* node = que.front();
+                que.pop();
+                for (int j = 0; j < node->children.size(); j++) {
+                    if (node->children[j]) que.push(node->children[j]);
+                }
+            }
+        }
+        return depth;
+    }
+};
 
 //111最小深度
+//1.1递归 后序遍历
+class Solution {
+public:
+    int getDepth(TreeNode* node) {
+        if (node == NULL) return 0;
+        int leftDepth = getDepth(node->left);           // 左
+        int rightDepth = getDepth(node->right);         // 右
+                                                        // 中
+        // 当一个左子树为空，右不为空，这时并不是最低点
+        if (node->left == NULL && node->right != NULL) { 
+            return 1 + rightDepth;
+        }   
+        // 当一个右子树为空，左不为空，这时并不是最低点
+        if (node->left != NULL && node->right == NULL) { 
+            return 1 + leftDepth;
+        }
+        int result = 1 + min(leftDepth, rightDepth);
+        return result;
+    }
+
+    int minDepth(TreeNode* root) {
+        return getDepth(root);
+    }
+};
+//1.2精简版
+class Solution {
+public:
+    int minDepth(TreeNode* root) {
+        if (root == NULL) return 0;
+        if (root->left == NULL && root->right != NULL) {
+            return 1 + minDepth(root->right);
+        }
+        if (root->left != NULL && root->right == NULL) {
+            return 1 + minDepth(root->left);
+        }
+        return 1 + min(minDepth(root->left), minDepth(root->right));
+    }
+};
+//2.1迭代
+class Solution {
+public:
+    int minDepth(TreeNode* root) {
+        if (root == NULL) return 0;
+        int depth = 0;
+        queue<TreeNode*> que;
+        que.push(root);
+        while(!que.empty()) {
+            int size = que.size();
+            depth++; // 记录最小深度
+            for (int i = 0; i < size; i++) {
+                TreeNode* node = que.front();
+                que.pop();
+                if (node->left) que.push(node->left);
+                if (node->right) que.push(node->right);
+                if (!node->left && !node->right) { // 当左右孩子都为空的时候，说明是最低点的一层了，退出
+                    return depth;
+                }
+            }
+        }
+        return depth;
+    }
+};
 
 //222.完全二叉树的节点个数
-// 版本一
+//普通二叉树的节点计算
+//1.1递归
 class Solution {
 private:
     int getNodesNum(TreeNode* cur) {
@@ -45,12 +241,54 @@ public:
     }
 };
 
-// 版本二 精简版
+//1.2
 class Solution {
 public:
     int countNodes(TreeNode* root) {
         if (root == NULL) return 0;
         return 1 + countNodes(root->left) + countNodes(root->right);
+    }
+};
+//2.2迭代
+class Solution {
+public:
+    int countNodes(TreeNode* root) {
+        queue<TreeNode*> que;
+        if (root != NULL) que.push(root);
+        int result = 0;
+        while (!que.empty()) {
+            int size = que.size();
+            for (int i = 0; i < size; i++) {
+                TreeNode* node = que.front();
+                que.pop();
+                result++;   // 记录节点数量
+                if (node->left) que.push(node->left);
+                if (node->right) que.push(node->right);
+            }
+        }
+        return result;
+    }
+};
+//基于完全二叉树的节点计算 递归
+class Solution {
+public:
+    int countNodes(TreeNode* root) {
+        if (root == nullptr) return 0;
+        TreeNode* left = root->left;
+        TreeNode* right = root->right;
+        int leftDepth = 0, rightDepth = 0; // 这里初始为0是有目的的，为了下面求指数方便
+        while (left) {  // 求左子树深度
+            left = left->left;
+            leftDepth++;
+        }
+        while (right) { // 求右子树深度
+            right = right->right;
+            rightDepth++;
+        }
+        if (leftDepth == rightDepth) {
+            return (2 << leftDepth) - 1; // 注意(2<<1) 相当于2^2，所以leftDepth初始为0
+        }
+        return countNodes(root->left) + countNodes(root->right) + 1;
     }
 };
 
@@ -74,9 +312,9 @@ public:
 };
 
 //257. 二叉树的所有路径
+//1.1递归
 class Solution {
 private:
-
     void traversal(TreeNode* cur, vector<int>& path, vector<string>& result) {
         path.push_back(cur->val); // 中，中为什么写在这里，因为最后一个节点也要加入到path中 
         // 这才到了叶子节点
@@ -99,7 +337,6 @@ private:
             path.pop_back(); // 回溯
         }
     }
-
 public:
     vector<string> binaryTreePaths(TreeNode* root) {
         vector<string> result;
@@ -109,29 +346,18 @@ public:
         return result;
     }
 };
-
-
-//精简版
+//1.2精简版
 class Solution {
 private:
+
     void traversal(TreeNode* cur, string path, vector<string>& result) {
-        path += to_string(cur->val); // 中，中为什么写在这里，因为最后一个节点也要加入到path中
+        path += to_string(cur->val); // 中
         if (cur->left == NULL && cur->right == NULL) {
             result.push_back(path);
             return;
         }
-        if (cur->left) {
-            path += "->";
-            traversal(cur->left, path, result); // 左
-            path.pop_back(); // 回溯 '>'
-            path.pop_back(); // 回溯 '-'
-        }
-        if (cur->right) {
-            path += "->";
-            traversal(cur->right, path, result); // 右
-            path.pop_back(); // 回溯'>'
-            path.pop_back(); // 回溯 '-'
-        }
+        if (cur->left) traversal(cur->left, path + "->", result); // 左
+        if (cur->right) traversal(cur->right, path + "->", result); // 右
     }
 
 public:
@@ -144,8 +370,37 @@ public:
 
     }
 };
+//2.1迭代
+class Solution {
+public:
+    vector<string> binaryTreePaths(TreeNode* root) {
+        stack<TreeNode*> treeSt;// 保存树的遍历节点
+        stack<string> pathSt;   // 保存遍历路径的节点
+        vector<string> result;  // 保存最终路径集合
+        if (root == NULL) return result;
+        treeSt.push(root);
+        pathSt.push(to_string(root->val));
+        while (!treeSt.empty()) {
+            TreeNode* node = treeSt.top(); treeSt.pop(); // 取出节点 中
+            string path = pathSt.top();pathSt.pop();    // 取出该节点对应的路径
+            if (node->left == NULL && node->right == NULL) { // 遇到叶子节点
+                result.push_back(path);
+            }
+            if (node->right) { // 右
+                treeSt.push(node->right);
+                pathSt.push(path + "->" + to_string(node->right->val));
+            }
+            if (node->left) { // 左
+                treeSt.push(node->left);
+                pathSt.push(path + "->" + to_string(node->left->val));
+            }
+        }
+        return result;
+    }
+};
 
 //404.左叶子之和
+//1.1递归
 class Solution {
 public:
     int sumOfLeftLeaves(TreeNode* root) {
@@ -162,7 +417,7 @@ public:
         return sum;
     }
 };
-//精简版
+//1.2精简版
 class Solution {
 public:
     int sumOfLeftLeaves(TreeNode* root) {
@@ -174,10 +429,77 @@ public:
         return leftValue + sumOfLeftLeaves(root->left) + sumOfLeftLeaves(root->right);
     }
 };
+//2.1迭代
+class Solution {
+public:
+    int sumOfLeftLeaves(TreeNode* root) {
+        stack<TreeNode*> st;
+        if (root == NULL) return 0;
+        st.push(root);
+        int result = 0;
+        while (!st.empty()) {
+            TreeNode* node = st.top();
+            st.pop();
+            if (node->left != NULL && node->left->left == NULL && node->left->right == NULL) {
+                result += node->left->val;
+            }
+            if (node->right) st.push(node->right);
+            if (node->left) st.push(node->left);
+        }
+        return result;
+    }
+};
 
-//513左下角
+//513找树左下角的值 
+//1.1递归 深度max+前序遍历
+class Solution {
+public:
+    int maxDepth = INT_MIN;
+    int result;
+    void traversal(TreeNode* root, int depth) {
+        if (root->left == NULL && root->right == NULL) {
+            if (depth > maxDepth) {
+                maxDepth = depth;
+                result = root->val;
+            }
+            return;
+        }
+        if (root->left) {
+            traversal(root->left, depth + 1); // 隐藏着回溯
+        }
+        if (root->right) {
+            traversal(root->right, depth + 1); // 隐藏着回溯
+        }
+        return;
+    }
+    int findBottomLeftValue(TreeNode* root) {
+        traversal(root, 0);
+        return result;
+    }
+};
+//2.1迭代层序
+class Solution {
+public:
+    int findBottomLeftValue(TreeNode* root) {
+        queue<TreeNode*> que;
+        if (root != NULL) que.push(root);
+        int result = 0;
+        while (!que.empty()) {
+            int size = que.size();
+            for (int i = 0; i < size; i++) {
+                TreeNode* node = que.front();
+                que.pop();
+                if (i == 0) result = node->val; // 记录最后一行第一个元素
+                if (node->left) que.push(node->left);
+                if (node->right) que.push(node->right);
+            }
+        }
+        return result;
+    }
+};
 
-//112. 路径总和
+//112.路径总和
+//1.1递归
 class Solution {
 private:
     bool traversal(TreeNode* cur, int count) {//传入的cnt是扣除root val
@@ -194,15 +516,13 @@ private:
     }
     return false;
     }
-
 public:
     bool hasPathSum(TreeNode* root, int sum) {
         if (root == NULL) return false;
         return traversal(root, sum - root->val);
     }
 };
-
-//精简版
+//1.2精简版
 class Solution {
 public:
     bool hasPathSum(TreeNode* root, int sum) {//这里的sum未扣除root val
@@ -211,6 +531,33 @@ public:
             return true;
         }
         return hasPathSum(root->left, sum - root->val) || hasPathSum(root->right, sum - root->val);
+    }
+};
+//2.1迭代
+class solution {
+public:
+    bool haspathsum(TreeNode* root, int sum) {
+        if (root == null) return false;
+        // 此时栈里要放的是pair<节点指针，路径数值>
+        stack<pair<TreeNode*, int>> st;
+        st.push(pair<TreeNode*, int>(root, root->val));
+        while (!st.empty()) {
+            pair<TreeNode*, int> node = st.top();
+            st.pop();
+            // 如果该节点是叶子节点了，同时该节点的路径数值等于sum，那么就返回true
+            if (!node.first->left && !node.first->right && sum == node.second) return true;
+
+            // 右节点，压进去一个节点的时候，将该节点的路径数值也记录下来
+            if (node.first->right) {
+                st.push(pair<TreeNode*, int>(node.first->right, node.second + node.first->right->val));
+            }
+
+            // 左节点，压进去一个节点的时候，将该节点的路径数值也记录下来
+            if (node.first->left) {
+                st.push(pair<TreeNode*, int>(node.first->left, node.second + node.first->left->val));
+            }
+        }
+        return false;
     }
 };
 
