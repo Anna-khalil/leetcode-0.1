@@ -1,20 +1,34 @@
 class Solution {
-public:
-    int maxDepth(Node* root) {
-        queue<Node*> q;
-        if( root != NULL ) q.push(root);
-        int depth = 0;
-        while(!q.empty()) {
-            int size = q.size();
-            depth++;
-            for(int i = 0; i < size; i++) {
-                Node* node = q.front();
-                q.pop();
-                for(int j = 0; j < node -> children.size(); j++ ) {
-                    if(node -> children[j]) q.push(node -> cjildren[j]);
-                }
+private:
+    vector<vector<string>> res;
+    vector<string> path;
+    vector<vector<bool>> isPalindrome;
+    void backtracking(const string& s, int start) {
+        if(star >= s.size()) {
+            res.push_back(path);
+            return;
+        }
+        for(int i = start; i < s.size(); i++) {
+            if(isPalindrome[start][i]) {
+                string str = s.substr(start, i - start + 1);
+                path.push_back(str);
+            }else {
+                continue;
+            }
+            backtracking(s, i + 1);
+            path.pop_back();
+        }
+    }
+    void computePalindrome(const string& s) {
+        isPalindrome.resize(s.size(),vector<bool>(s.size(),false));
+        for(int i = s.size() - 1; i >= 0; i--) {
+            for(int j = i; j < s.size(); j++) {
+                if()
             }
         }
-        return depth;
+    }
+ public:
+    vector<vector<string>> partition(string s) {
+        
     }
 };
