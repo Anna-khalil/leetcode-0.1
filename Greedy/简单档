@@ -1,0 +1,79 @@
+//455.分发饼干
+//局部最优就是大饼干喂给胃口大的，充分利用饼干尺寸喂饱一个，全局最优就是喂饱尽可能多的小孩。
+class Solution {
+public:
+    int findContentChildren(vector<int>& g, vector<int>& s) {
+        sort(g.begin(), g.end());
+        sort(s.begin(), s.end());
+        int index = s.size() - 1; // 饼干数组的下标
+        int result = 0;
+        for (int i = g.size() - 1; i >= 0; i--) { // 遍历胃口
+            if (index >= 0 && s[index] >= g[i]) { // 遍历饼干
+                result++;
+                index--;
+            }
+        }
+        return result;
+    }
+};
+
+//1005.K次取反后最大化的数组和
+//本题的解题步骤为：
+// 第一步：将数组按照绝对值大小从大到小排序，注意要按照绝对值的大小
+// 第二步：从前向后遍历，遇到负数将其变为正数，同时K--
+// 第三步：如果K还大于0，那么反复转变数值最小的元素，将K用完
+// 第四步：求和
+class Solution {
+static bool cmp(int a, int b) {
+    return abs(a) > abs(b);
+}
+public:
+    int largestSumAfterKNegations(vector<int>& A, int K) {
+        sort(A.begin(), A.end(), cmp);       // 第一步
+        for (int i = 0; i < A.size(); i++) { // 第二步
+            if (A[i] < 0 && K > 0) {
+                A[i] *= -1;
+                K--;
+            }
+        }
+        if (K % 2 == 1) A[A.size() - 1] *= -1; // 第三步
+        int result = 0;
+        for (int a : A) result += a;        // 第四步
+        return result;
+    }
+};
+
+//860.柠檬水找零
+//有如下三种情况：
+// 情况一：账单是5，直接收下。
+// 情况二：账单是10，消耗一个5，增加一个10
+// 情况三：账单是20，优先消耗一个10和一个5，如果不够，再消耗三个5
+class Solution {
+public:
+    bool lemonadeChange(vector<int>& bills) {
+        int five = 0, ten = 0, twenty = 0;
+        for (int bill : bills) {
+            // 情况一
+            if (bill == 5) five++;
+            // 情况二
+            if (bill == 10) {
+                if (five <= 0) return false;
+                ten++;
+                five--;
+            }
+            // 情况三
+            if (bill == 20) {
+                // 优先消耗10美元，因为5美元的找零用处更大，能多留着就多留着
+                if (five > 0 && ten > 0) {
+                    five--;
+                    ten--;
+                    twenty++; // 其实这行代码可以删了，因为记录20已经没有意义了，不会用20来找零
+                } else if (five >= 3) {
+                    five -= 3;
+                    twenty++; // 同理，这行代码也可以删了
+                } else return false;
+            }
+        }
+        return true;
+    }
+};

@@ -1,0 +1,138 @@
+//376. 摆动序列
+//1.1贪心
+class Solution {
+public:
+    int wiggleMaxLength(vector<int>& nums) {
+        if (nums.size() <= 1) return nums.size();
+        int curDiff = 0; // 当前一对差值
+        int preDiff = 0; // 前一对差值
+        int result = 1;  // 记录峰值个数，序列默认序列最右边有一个峰值
+        for (int i = 0; i < nums.size() - 1; i++) {
+            curDiff = nums[i + 1] - nums[i];
+            // 出现峰值
+            if ((preDiff <= 0 && curDiff > 0) || (preDiff >= 0 && curDiff < 0)) {
+                result++;
+                preDiff = curDiff; // 注意这里，只在摆动变化的时候更新prediff
+            }
+        }
+        return result;
+    }
+};
+//2.1动态规划
+// 设 dp 状态dp[i][0]，表示考虑前 i 个数，第 i 个数作为山峰的摆动子序列的最长长度
+// 设 dp 状态dp[i][1]，表示考虑前 i 个数，第 i 个数作为山谷的摆动子序列的最长长度
+class Solution {
+public:
+    int dp[1005][2];
+    int wiggleMaxLength(vector<int>& nums) {
+        memset(dp, 0, sizeof dp);
+        dp[0][0] = dp[0][1] = 1;
+        for (int i = 1; i < nums.size(); ++i) {
+            dp[i][0] = dp[i][1] = 1;
+            for (int j = 0; j < i; ++j) {
+                if (nums[j] > nums[i]) dp[i][1] = max(dp[i][1], dp[j][0] + 1);
+            }
+            for (int j = 0; j < i; ++j) {
+                if (nums[j] < nums[i]) dp[i][0] = max(dp[i][0], dp[j][1] + 1);
+            }
+        }
+        return max(dp[nums.size() - 1][0], dp[nums.size() - 1][1]);
+    }
+};
+
+//738.单调递增的数字
+// 本题只要想清楚个例，例如98，一旦出现strNum[i - 1] > strNum[i]的情况（非单调递增），
+// 首先想让strNum[i - 1]减一，strNum[i]赋值9，这样这个整数就是89。就可以很自然想到对应的贪心解法了。
+// 想到了贪心，还要考虑遍历顺序，只有从后向前遍历才能重复利用上次比较的结果。
+// 最后代码实现的时候，也需要一些技巧，例如用一个flag来标记从哪里开始赋值9。
+class Solution {
+public:
+    int monotoneIncreasingDigits(int N) {
+        string strNum = to_string(N);
+        // flag用来标记赋值9从哪里开始
+        // 设置为这个默认值，为了防止第二个for循环在flag没有被赋值的情况下执行
+        int flag = strNum.size();
+        for (int i = strNum.size() - 1; i > 0; i--) {
+            if (strNum[i - 1] > strNum[i] ) {
+                flag = i;
+                strNum[i - 1]--;
+            }
+        }
+        for (int i = flag; i < strNum.size(); i++) {//这里维持从flag之后非递减
+            strNum[i] = '9';
+        }
+        return stoi(strNum);//将字符串 strNum 转换为对应的 整数 
+    }
+};
+
+//两个维度权衡问题
+//135. 分发糖果
+// 如果在考虑局部的时候想两边兼顾，就会顾此失彼。
+// 那么本题我采用了两次贪心的策略：
+// 一次是从左到右遍历，只比较右边孩子评分比左边大的情况。
+// 一次是从右到左遍历，只比较左边孩子评分比右边大的情况。
+// 这样从局部最优推出了全局最优，即：相邻的孩子中，评分高的孩子获得更多的糖果。
+class Solution {
+public:
+    int candy(vector<int>& ratings) {
+        vector<int> candyVec(ratings.size(), 1);
+        // 从前向后
+        for (int i = 1; i < ratings.size(); i++) {
+            if (ratings[i] > ratings[i - 1]) candyVec[i] = candyVec[i - 1] + 1;
+        }
+        // 从后向前
+        for (int i = ratings.size() - 2; i >= 0; i--) {
+            if (ratings[i] > ratings[i + 1] ) {
+                candyVec[i] = max(candyVec[i], candyVec[i + 1] + 1);
+            }
+        }
+        // 统计结果
+        int result = 0;
+        for (int i = 0; i < candyVec.size(); i++) result += candyVec[i];
+        return result;
+    }
+};
+
+//406.根据身高重建队列
+// 所以在按照身高从大到小排序后：
+// 局部最优：优先按身高高的people的k（前有多少人）来插入。插入操作过后的people满足队列属性
+// 全局最优：最后都做完插入操作，整个队列满足题目队列属性
+//1.1vector实现
+class Solution {
+public:
+    static bool cmp(const vector<int>& a, const vector<int>& b) {
+        if (a[0] == b[0]) return a[1] < b[1];
+        return a[0] > b[0];
+    }
+    vector<vector<int>> reconstructQueue(vector<vector<int>>& people) {
+        sort (people.begin(), people.end(), cmp);
+        vector<vector<int>> que;
+        for (int i = 0; i < people.size(); i++) {
+            int position = people[i][1];
+            que.insert(que.begin() + position, people[i]);
+        }
+        return que;
+    }
+};
+//1.2list更高效率
+class Solution {
+public:
+    // 身高从大到小排（身高相同k小的站前面）
+    static bool cmp(const vector<int>& a, const vector<int>& b) {
+        if (a[0] == b[0]) return a[1] < b[1];
+        return a[0] > b[0];
+    }
+    vector<vector<int>> reconstructQueue(vector<vector<int>>& people) {
+        sort (people.begin(), people.end(), cmp);
+        list<vector<int>> que; // list底层是链表实现，插入效率比vector高的多
+        for (int i = 0; i < people.size(); i++) {
+            int position = people[i][1]; // 插入到下标为position的位置
+            std::list<vector<int>>::iterator it = que.begin();
+            while (position--) { // 寻找在插入位置
+                it++;
+            }
+            que.insert(it, people[i]);
+        }
+        return vector<vector<int>>(que.begin(), que.end());
+    }
+};
