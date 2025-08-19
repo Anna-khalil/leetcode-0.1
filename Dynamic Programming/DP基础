@@ -1,0 +1,225 @@
+//509. 斐波那契数
+//1.1
+class Solution {
+public:
+    int fib(int N) {
+        if (N <= 1) return N;
+        vector<int> dp(N + 1);
+        dp[0] = 0;
+        dp[1] = 1;
+        for (int i = 2; i <= N; i++) {
+            dp[i] = dp[i - 1] + dp[i - 2];
+        }
+        return dp[N];
+    }
+};
+//1.2 空间复杂度优化
+//只需要维护两个数值就可以了，不需要记录整个序列
+class Solution {
+public:
+    int fib(int N) {
+        if (N <= 1) return N;
+        int dp[2];
+        dp[0] = 0;
+        dp[1] = 1;
+        for (int i = 2; i <= N; i++) {
+            int sum = dp[0] + dp[1];
+            dp[0] = dp[1];
+            dp[1] = sum;
+        }
+        return dp[1];
+    }
+};
+//2.1递归
+class Solution {
+public:
+    int fib(int N) {
+        if (N < 2) return N;
+        return fib(N - 1) + fib(N - 2);
+    }
+};
+
+//70. 爬楼梯
+//1.1 版本一
+class Solution {
+public:
+    int climbStairs(int n) {
+        if (n <= 1) return n; // 因为下面直接对dp[2]操作了，防止空指针
+        vector<int> dp(n + 1);
+        dp[1] = 1;
+        dp[2] = 2;
+        for (int i = 3; i <= n; i++) { // 注意i是从3开始的
+            dp[i] = dp[i - 1] + dp[i - 2];
+        }
+        return dp[n];
+    }
+};
+//1.2 版本二 空间优化版本
+class Solution {
+public:
+    int climbStairs(int n) {
+        if (n <= 1) return n;
+        int dp[3];
+        dp[1] = 1;
+        dp[2] = 2;
+        for (int i = 3; i <= n; i++) {
+            int sum = dp[1] + dp[2];
+            dp[1] = dp[2];
+            dp[2] = sum;
+        }
+        return dp[2];
+    }
+};
+//2.1完全背包版本
+class Solution {
+public:
+    int climbStairs(int n) {
+        vector<int> dp(n + 1, 0);
+        dp[0] = 1;
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= m; j++) { // 把m换成2，就可以AC爬楼梯这道题
+                if (i - j >= 0) dp[i] += dp[i - j];
+            }
+        }
+        return dp[n];
+    }
+};
+
+//746. 使用最小花费爬楼梯
+//1.1
+class Solution {
+public:
+    int minCostClimbingStairs(vector<int>& cost) {
+        vector<int> dp(cost.size() + 1);
+        dp[0] = 0; // 默认第一步都是不花费体力的
+        dp[1] = 0;
+        for (int i = 2; i <= cost.size(); i++) {
+            dp[i] = min(dp[i - 1] + cost[i - 1], dp[i - 2] + cost[i - 2]);
+        }
+        return dp[cost.size()];
+    }
+};
+//1.2
+class Solution {
+public:
+    int minCostClimbingStairs(vector<int>& cost) {
+        int dp0 = 0;
+        int dp1 = 0;
+        for (int i = 2; i <= cost.size(); i++) {
+            int dpi = min(dp1 + cost[i - 1], dp0 + cost[i - 2]);
+            dp0 = dp1; // 记录一下前两位
+            dp1 = dpi;
+        }
+        return dp1;
+    }
+};
+
+//62.不同路径
+//1.1 二维
+class Solution {
+public:
+    int uniquePaths(int m, int n) {
+        vector<vector<int>> dp(m, vector<int>(n, 0));
+        for (int i = 0; i < m; i++) dp[i][0] = 1;
+        for (int j = 0; j < n; j++) dp[0][j] = 1;
+        for (int i = 1; i < m; i++) {
+            for (int j = 1; j < n; j++) {
+                dp[i][j] = dp[i - 1][j] + dp[i][j - 1];
+            }
+        }
+        return dp[m - 1][n - 1];
+    }
+};
+//1.2一维
+class Solution {
+public:
+    int uniquePaths(int m, int n) {
+        vector<int> dp(n);
+        for (int i = 0; i < n; i++) dp[i] = 1;
+        for (int j = 1; j < m; j++) {
+            for (int i = 1; i < n; i++) {
+                dp[i] += dp[i - 1];
+            }
+        }
+        return dp[n - 1];
+    }
+};
+//2.1 可数论完成 从（m + n - 2） 中选取 ( m - 1 )
+
+//63. 不同路径 II
+//1.1
+class Solution {
+public:
+    int uniquePathsWithObstacles(vector<vector<int>>& obstacleGrid) {
+        int m = obstacleGrid.size();
+        int n = obstacleGrid[0].size();
+        if (obstacleGrid[m - 1][n - 1] == 1 || obstacleGrid[0][0] == 1) 
+        //如果在起点或终点出现了障碍，直接返回0
+            return 0;
+        vector<vector<int>> dp(m, vector<int>(n, 0));
+        for (int i = 0; i < m && obstacleGrid[i][0] == 0; i++) dp[i][0] = 1;
+        for (int j = 0; j < n && obstacleGrid[0][j] == 0; j++) dp[0][j] = 1;
+        for (int i = 1; i < m; i++) {
+            for (int j = 1; j < n; j++) {
+                if (obstacleGrid[i][j] == 1) continue;
+                dp[i][j] = dp[i - 1][j] + dp[i][j - 1];
+            }
+        }
+        return dp[m - 1][n - 1];
+    }
+};
+//1.2空间优化版
+class Solution {
+public:
+    int uniquePathsWithObstacles(vector<vector<int>>& obstacleGrid) {
+        if (obstacleGrid[0][0] == 1)
+            return 0;
+        vector<int> dp(obstacleGrid[0].size());
+        for (int j = 0; j < dp.size(); ++j)
+            if (obstacleGrid[0][j] == 1)
+                dp[j] = 0;
+            else if (j == 0)
+                dp[j] = 1;
+            else
+                dp[j] = dp[j-1];
+
+        for (int i = 1; i < obstacleGrid.size(); ++i)
+            for (int j = 0; j < dp.size(); ++j){
+                if (obstacleGrid[i][j] == 1)
+                    dp[j] = 0;
+                else if (j != 0)
+                    dp[j] = dp[j] + dp[j-1];
+            }
+        return dp.back();
+    }
+};
+
+//343. 整数拆分
+class Solution {
+public:
+    int integerBreak(int n) {
+        vector<int> dp(n + 1);
+        dp[2] = 1;
+        for (int i = 3; i <= n ; i++) {
+            for (int j = 1; j <= i / 2; j++) {
+                dp[i] = max(dp[i], max((i - j) * j, dp[i - j] * j));
+            }
+        }
+        return dp[n];
+    }
+};
+
+//96.不同的二叉搜索树
+class Solution {
+public:
+    int numTrees(int n) {
+        vector<int> dp(n + 1);
+        dp[0] = 1;
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= i; j++) {
+                dp[i] += dp[j - 1] * dp[i - j];
+            }
+        }
+        return dp[n];
+    }
+};
