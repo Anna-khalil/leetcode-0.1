@@ -58,6 +58,16 @@
     "02中等档": "cpp",
     "01简单档": "cpp",
     "03难度档": "cpp",
-    "monotonic stack": "cpp"
+    "monotonic stack": "cpp",
+    "dfs and bfs": "cpp",
+    "背包问题": "cpp",
+    "*.替换数字": "cpp",
+    "*. 右旋字符串": "cpp",
+    "*. 开发商购买土地": "cpp",
+    "*. 区间和": "cpp",
+    "子序列系列": "cpp",
+    "dp基础": "cpp",
+    "打家劫舍": "cpp",
+    "股票系列": "cpp"
   }
 }

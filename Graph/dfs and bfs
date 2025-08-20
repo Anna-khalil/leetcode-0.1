@@ -1,4 +1,5 @@
 //98. 所有可达路径
+//dfs是可一个方向去搜，不到黄河不回头，直到遇到绝境了，搜不下去了，再换方向（换方向的过程就涉及到了回溯）。
 //邻接矩阵
 #include <iostream>
 #include <vector>
@@ -95,4 +96,683 @@ int main() {
     }
 }
 
-//
+//99. 岛屿数量
+//深搜 下一个节点是否能合法已经判断完了，传进dfs函数的就是合法节点。
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int dir[4][2] = {0, 1, 1, 0, -1, 0, 0, -1}; // 四个方向
+void dfs(const vector<vector<int>>& grid, vector<vector<bool>>& visited, int x, int y) {
+    for (int i = 0; i < 4; i++) {
+        int nextx = x + dir[i][0];
+        int nexty = y + dir[i][1];
+        if (nextx < 0 || nextx >= grid.size() || nexty < 0 || nexty >= grid[0].size()) continue;  // 越界了，直接跳过
+        if (!visited[nextx][nexty] && grid[nextx][nexty] == 1) { // 没有访问过的 同时 是陆地的
+
+            visited[nextx][nexty] = true;
+            dfs(grid, visited, nextx, nexty);//继续深入搜索
+        }
+    }
+}
+
+int main() {
+    int n, m;
+    cin >> n >> m;
+    vector<vector<int>> grid(n, vector<int>(m, 0));
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            cin >> grid[i][j];
+        }
+    }
+
+    vector<vector<bool>> visited(n, vector<bool>(m, false));
+
+    int result = 0;
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            if (!visited[i][j] && grid[i][j] == 1) {
+                visited[i][j] = true;
+                result++; // 遇到没访问过的陆地，+1
+                dfs(grid, visited, i, j); // 将与其链接的陆地都标记上 true
+            }
+        }
+    }
+
+    cout << result << endl;
+}
+
+//广搜
+//广搜是从起点出发，以起始点为中心一圈一圈进行搜索，一旦遇到终点，记录之前走过的节点就是一条最短路。
+//bfs是先把本节点所连接的所有节点遍历一遍，走到下一个节点的时候，再把连接节点的所有节点遍历一遍，搜索方向更像是广度，四面八方的搜索过程。
+#include <iostream>
+#include <vector>
+#include <queue>
+using namespace std;
+
+int dir[4][2] = {0, 1, 1, 0, -1, 0, 0, -1}; // 四个方向
+void bfs(const vector<vector<int>>& grid, vector<vector<bool>>& visited, int x, int y) {
+    queue<pair<int, int>> que;
+    que.push({x, y});
+    visited[x][y] = true; // 只要加入队列，立刻标记
+    while(!que.empty()) {
+        pair<int ,int> cur = que.front(); que.pop();
+        int curx = cur.first;
+        int cury = cur.second;
+        for (int i = 0; i < 4; i++) {
+            int nextx = curx + dir[i][0];
+            int nexty = cury + dir[i][1];
+            if (nextx < 0 || nextx >= grid.size() || nexty < 0 || nexty >= grid[0].size()) continue;  // 越界了，直接跳过
+            if (!visited[nextx][nexty] && grid[nextx][nexty] == 1) {
+                que.push({nextx, nexty});
+                visited[nextx][nexty] = true; // 只要加入队列立刻标记
+            }
+        }
+    }
+}
+
+int main() {
+    int n, m;
+    cin >> n >> m;
+    vector<vector<int>> grid(n, vector<int>(m, 0));
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            cin >> grid[i][j];
+        }
+    }
+
+    vector<vector<bool>> visited(n, vector<bool>(m, false));
+
+    int result = 0;
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            if (!visited[i][j] && grid[i][j] == 1) {
+                result++; // 遇到没访问过的陆地，+1
+                bfs(grid, visited, i, j); // 将与其链接的陆地都标记上 true
+            }
+        }
+    }
+
+
+    cout << result << endl;
+}
+
+//100. 岛屿的最大面积
+//深搜 在主函数遇到陆地 计数为0，也就是不计数，陆地数量都去dfs里做计算。
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int count;
+int dir[4][2] = {0, 1, 1, 0, -1, 0, 0, -1}; // 四个方向
+void dfs(vector<vector<int>>& grid, vector<vector<bool>>& visited, int x, int y) {
+    if (visited[x][y] || grid[x][y] == 0) return; // 终止条件：访问过的节点 或者 遇到海水
+    visited[x][y] = true; // 标记访问过
+    count++;
+    for (int i = 0; i < 4; i++) {
+        int nextx = x + dir[i][0];
+        int nexty = y + dir[i][1];
+        if (nextx < 0 || nextx >= grid.size() || nexty < 0 || nexty >= grid[0].size()) continue;  // 越界了，直接跳过
+        dfs(grid, visited, nextx, nexty);
+    }
+}
+
+int main() {
+    int n, m;
+    cin >> n >> m;
+    vector<vector<int>> grid(n, vector<int>(m, 0));
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            cin >> grid[i][j];
+        }
+    }
+    vector<vector<bool>> visited = vector<vector<bool>>(n, vector<bool>(m, false));
+    int result = 0;
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            if (!visited[i][j] && grid[i][j] == 1) {
+                count = 0; // 因为dfs处理当前节点，所以遇到陆地计数为0，进dfs之后在开始从1计数
+                dfs(grid, visited, i, j); // 将与其链接的陆地都标记上 true
+                result = max(result, count);
+            }
+        }
+    }
+    cout << result << endl;
+}
+
+//bfs
+class Solution {
+private:
+    int count;
+    int dir[4][2] = {0, 1, 1, 0, -1, 0, 0, -1}; // 四个方向
+    void bfs(vector<vector<int>>& grid, vector<vector<bool>>& visited, int x, int y) {
+        queue<int> que;
+        que.push(x);
+        que.push(y);
+        visited[x][y] = true; // 加入队列就意味节点是陆地可到达的点
+        count++;
+        while(!que.empty()) {
+            int xx = que.front();que.pop();
+            int yy = que.front();que.pop();
+            for (int i = 0 ;i < 4; i++) {
+                int nextx = xx + dir[i][0];
+                int nexty = yy + dir[i][1];
+                if (nextx < 0 || nextx >= grid.size() || nexty < 0 || nexty >= grid[0].size()) continue; // 越界
+                if (!visited[nextx][nexty] && grid[nextx][nexty] == 1) { // 节点没有被访问过且是陆地
+                    visited[nextx][nexty] = true;
+                    count++;
+                    que.push(nextx);
+                    que.push(nexty);
+                }
+            }
+        }
+    }
+
+public:
+    int maxAreaOfIsland(vector<vector<int>>& grid) {
+        int n = grid.size(), m = grid[0].size();
+        vector<vector<bool>> visited = vector<vector<bool>>(n, vector<bool>(m, false));
+        int result = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (!visited[i][j] && grid[i][j] == 1) {
+                    count = 0;
+                    bfs(grid, visited, i, j); // 将与其链接的陆地都标记上 true
+                    result = max(result, count);
+                }
+            }
+        }
+        return result;
+    }
+};
+
+//101. 孤岛的总面积
+//从周边找到陆地然后 通过 dfs或者bfs 将周边靠陆地且相邻的陆地都变成海洋，然后再去重新遍历地图 统计此时还剩下的陆地就可以了。
+//dfs
+#include <iostream>
+#include <vector>
+using namespace std;
+int dir[4][2] = {-1, 0, 0, -1, 1, 0, 0, 1}; // 保存四个方向
+void dfs(vector<vector<int>>& grid, int x, int y) {
+    grid[x][y] = 0;
+    for (int i = 0; i < 4; i++) { // 向四个方向遍历
+        int nextx = x + dir[i][0];
+        int nexty = y + dir[i][1];
+        // 超过边界
+        if (nextx < 0 || nextx >= grid.size() || nexty < 0 || nexty >= grid[0].size()) continue;
+        // 不符合条件，不继续遍历
+        if (grid[nextx][nexty] == 0) continue;
+
+        dfs (grid, nextx, nexty);
+    }
+    return;
+}
+
+int main() {
+    int n, m;
+    cin >> n >> m;
+    vector<vector<int>> grid(n, vector<int>(m, 0));
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            cin >> grid[i][j];
+        }
+    }
+
+    // 从左侧边，和右侧边 向中间遍历
+    for (int i = 0; i < n; i++) {
+        if (grid[i][0] == 1) dfs(grid, i, 0);
+        if (grid[i][m - 1] == 1) dfs(grid, i, m - 1);
+    }
+    // 从上边和下边 向中间遍历
+    for (int j = 0; j < m; j++) {
+        if (grid[0][j] == 1) dfs(grid, 0, j);
+        if (grid[n - 1][j] == 1) dfs(grid, n - 1, j);
+    }
+    int count = 0;
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            if (grid[i][j] == 1) count++;
+        }
+    }
+    cout << count << endl;
+}
+
+
+// 采用广度优先搜索的代码如下：
+#include <iostream>
+#include <vector>
+#include <queue>
+using namespace std;
+int dir[4][2] = {0, 1, 1, 0, -1, 0, 0, -1}; // 四个方向
+void bfs(vector<vector<int>>& grid, int x, int y) {
+    queue<pair<int, int>> que;
+    que.push({x, y});
+    grid[x][y] = 0; // 只要加入队列，立刻标记
+    while(!que.empty()) {
+        pair<int ,int> cur = que.front(); que.pop();
+        int curx = cur.first;
+        int cury = cur.second;
+        for (int i = 0; i < 4; i++) {
+            int nextx = curx + dir[i][0];
+            int nexty = cury + dir[i][1];
+            if (nextx < 0 || nextx >= grid.size() || nexty < 0 || nexty >= grid[0].size()) continue;  // 越界了，直接跳过
+            if (grid[nextx][nexty] == 1) {
+                que.push({nextx, nexty});
+                grid[nextx][nexty] = 0; // 只要加入队列立刻标记
+            }
+        }
+    }
+}
+
+int main() {
+    int n, m;
+    cin >> n >> m;
+    vector<vector<int>> grid(n, vector<int>(m, 0));
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            cin >> grid[i][j];
+        }
+    }
+    // 从左侧边，和右侧边 向中间遍历
+    for (int i = 0; i < n; i++) {
+        if (grid[i][0] == 1) bfs(grid, i, 0);
+        if (grid[i][m - 1] == 1) bfs(grid, i, m - 1);
+    }
+    // 从上边和下边 向中间遍历
+    for (int j = 0; j < m; j++) {
+        if (grid[0][j] == 1) bfs(grid, 0, j);
+        if (grid[n - 1][j] == 1) bfs(grid, n - 1, j);
+    }
+    int count = 0;
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            if (grid[i][j] == 1) count++;
+        }
+    }
+
+    cout << count << endl;
+}
+
+//102. 沉没孤岛
+//步骤一：深搜或者广搜将地图周边的 1 （陆地）全部改成 2 （特殊标记）
+// 步骤二：将水域中间 1 （陆地）全部改成 水域（0）
+// 步骤三：将之前标记的 2 改为 1 （陆地）
+#include <iostream>
+#include <vector>
+using namespace std;
+int dir[4][2] = {-1, 0, 0, -1, 1, 0, 0, 1}; // 保存四个方向
+void dfs(vector<vector<int>>& grid, int x, int y) {
+    grid[x][y] = 2;
+    for (int i = 0; i < 4; i++) { // 向四个方向遍历
+        int nextx = x + dir[i][0];
+        int nexty = y + dir[i][1];
+        // 超过边界
+        if (nextx < 0 || nextx >= grid.size() || nexty < 0 || nexty >= grid[0].size()) continue;
+        // 不符合条件，不继续遍历
+        if (grid[nextx][nexty] == 0 || grid[nextx][nexty] == 2) continue;
+        dfs (grid, nextx, nexty);
+    }
+    return;
+}
+
+int main() {
+    int n, m;
+    cin >> n >> m;
+    vector<vector<int>> grid(n, vector<int>(m, 0));
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            cin >> grid[i][j];
+        }
+    }
+
+    // 步骤一：
+    // 从左侧边，和右侧边 向中间遍历
+    for (int i = 0; i < n; i++) {
+        if (grid[i][0] == 1) dfs(grid, i, 0);
+        if (grid[i][m - 1] == 1) dfs(grid, i, m - 1);
+    }
+
+    // 从上边和下边 向中间遍历
+    for (int j = 0; j < m; j++) {
+        if (grid[0][j] == 1) dfs(grid, 0, j);
+        if (grid[n - 1][j] == 1) dfs(grid, n - 1, j);
+    }
+    // 步骤二、步骤三
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            if (grid[i][j] == 1) grid[i][j] = 0;
+            if (grid[i][j] == 2) grid[i][j] = 1;
+        }
+    }
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            cout << grid[i][j] << " ";
+        }
+        cout << endl;
+    }
+}
+
+//103. 水流问题
+//从第一组边界上的节点 逆流而上，将遍历过的节点都标记上。
+// 同样从第二组边界的边上节点 逆流而上，将遍历过的节点也标记上。
+// 然后两方都标记过的节点就是既可以流向第一组边界也可以流向第二组边界的节点。
+#include <iostream>
+#include <vector>
+using namespace std;
+int n, m;
+int dir[4][2] = {-1, 0, 0, -1, 1, 0, 0, 1};
+void dfs(vector<vector<int>>& grid, vector<vector<bool>>& visited, int x, int y) {
+    if (visited[x][y]) return;
+
+    visited[x][y] = true;
+
+    for (int i = 0; i < 4; i++) {
+        int nextx = x + dir[i][0];
+        int nexty = y + dir[i][1];
+        if (nextx < 0 || nextx >= n || nexty < 0 || nexty >= m) continue;
+        if (grid[x][y] > grid[nextx][nexty]) continue; // 注意：这里是从低向高遍历
+
+        dfs (grid, visited, nextx, nexty);
+    }
+    return;
+}
+
+
+
+int main() {
+
+    cin >> n >> m;
+    vector<vector<int>> grid(n, vector<int>(m, 0));
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            cin >> grid[i][j];
+        }
+    }
+    // 标记从第一组边界上的节点出发，可以遍历的节点
+    vector<vector<bool>> firstBorder(n, vector<bool>(m, false));
+
+    // 标记从第一组边界上的节点出发，可以遍历的节点
+    vector<vector<bool>> secondBorder(n, vector<bool>(m, false));
+
+    // 从最上和最下行的节点出发，向高处遍历
+    for (int i = 0; i < n; i++) {
+        dfs (grid, firstBorder, i, 0); // 遍历最左列，接触第一组边界
+        dfs (grid, secondBorder, i, m - 1); // 遍历最右列，接触第二组边界
+    }
+
+    // 从最左和最右列的节点出发，向高处遍历
+    for (int j = 0; j < m; j++) {
+        dfs (grid, firstBorder, 0, j); // 遍历最上行，接触第一组边界
+        dfs (grid, secondBorder, n - 1, j); // 遍历最下行，接触第二组边界
+    }
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            // 如果这个节点，从第一组边界和第二组边界出发都遍历过，就是结果
+            if (firstBorder[i][j] && secondBorder[i][j]) cout << i << " " << j << endl;;
+        }
+    }
+}
+
+//104.建造最大岛屿
+//只要用一次深搜把每个岛屿的面积记录下来就好。
+// 第一步：一次遍历地图，得出各个岛屿的面积，并做编号记录。可以使用map记录，key为岛屿编号，value为岛屿面积
+// 第二步：再遍历地图，遍历0的方格（因为要将0变成1），并统计该1（由0变成的1）周边岛屿面积，将其相邻面积相加在一起，遍历所有 0 之后，就可以得出 选一个0变成1 之后的最大面积。
+
+#include <iostream>
+#include <vector>
+#include <unordered_set>
+#include <unordered_map>
+using namespace std;
+int n, m;
+int count;
+
+int dir[4][2] = {0, 1, 1, 0, -1, 0, 0, -1}; // 四个方向
+void dfs(vector<vector<int>>& grid, vector<vector<bool>>& visited, int x, int y, int mark) {
+    if (visited[x][y] || grid[x][y] == 0) return; // 终止条件：访问过的节点 或者 遇到海水
+    visited[x][y] = true; // 标记访问过
+    grid[x][y] = mark; // 给陆地标记新标签
+    count++;
+    for (int i = 0; i < 4; i++) {
+        int nextx = x + dir[i][0];
+        int nexty = y + dir[i][1];
+        if (nextx < 0 || nextx >= n || nexty < 0 || nexty >= m) continue;  // 越界了，直接跳过
+        dfs(grid, visited, nextx, nexty, mark);
+    }
+}
+
+int main() {
+    cin >> n >> m;
+    vector<vector<int>> grid(n, vector<int>(m, 0));
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            cin >> grid[i][j];
+        }
+    }
+    vector<vector<bool>> visited(n, vector<bool>(m, false)); // 标记访问过的点
+    unordered_map<int ,int> gridNum;
+    int mark = 2; // 记录每个岛屿的编号
+    bool isAllGrid = true; // 标记是否整个地图都是陆地
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            if (grid[i][j] == 0) isAllGrid = false;
+            if (!visited[i][j] && grid[i][j] == 1) {
+                count = 0;
+                dfs(grid, visited, i, j, mark); // 将与其链接的陆地都标记上 true
+                gridNum[mark] = count; // 记录每一个岛屿的面积
+                mark++; // 记录下一个岛屿编号
+            }
+        }
+    }
+    if (isAllGrid) {
+        cout << n * m << endl; // 如果都是陆地，返回全面积
+        return 0; // 结束程序
+    }
+
+    // 以下逻辑是根据添加陆地的位置，计算周边岛屿面积之和
+    int result = 0; // 记录最后结果
+    unordered_set<int> visitedGrid; // 标记访问过的岛屿
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            count = 1; // 记录连接之后的岛屿数量
+            visitedGrid.clear(); // 每次使用时，清空
+            if (grid[i][j] == 0) {
+                for (int k = 0; k < 4; k++) {
+                    int neari = i + dir[k][1]; // 计算相邻坐标
+                    int nearj = j + dir[k][0];
+                    if (neari < 0 || neari >= n || nearj < 0 || nearj >= m) continue;
+                    if (visitedGrid.count(grid[neari][nearj])) continue; // 添加过的岛屿不要重复添加
+                    // 把相邻四面的岛屿数量加起来
+                    count += gridNum[grid[neari][nearj]];
+                    visitedGrid.insert(grid[neari][nearj]); // 标记该岛屿已经添加过
+                }
+            }
+            result = max(result, count);
+        }
+    }
+    cout << result << endl;
+}
+
+//106. 岛屿的周长 不要惯性思维
+//只需要在计算出相邻岛屿的数量就可以了，相邻岛屿数量为cover。
+// 结果 result = 岛屿数量 * 4 - cover * 2;
+#include <iostream>
+#include <vector>
+using namespace std;
+int main() {
+    int n, m;
+    cin >> n >> m;
+    vector<vector<int>> grid(n, vector<int>(m, 0));
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            cin >> grid[i][j];
+        }
+    }
+    int sum = 0;    // 陆地数量
+    int cover = 0;  // 相邻数量
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            if (grid[i][j] == 1) {
+                sum++; // 统计总的陆地数量
+                // 统计上边相邻陆地
+                if(i - 1 >= 0 && grid[i - 1][j] == 1) cover++;
+                // 统计左边相邻陆地
+                if(j - 1 >= 0 && grid[i][j - 1] == 1) cover++;
+                // 为什么没统计下边和右边？ 因为避免重复计算
+            }
+        }
+    }
+
+    cout << sum * 4 - cover * 2 << endl;
+
+}
+
+//110. 字符串接龙
+//只需要求出最短路径的长度就可以了，不用找出具体路径
+//在无权图中，用广搜求最短路最为合适，广搜只要搜到了终点，那么一定是最短的路径。
+#include <iostream>
+#include <vector>
+#include <string>
+#include <unordered_set>
+#include <unordered_map>
+#include <queue>
+using namespace std;
+int main() {
+    string beginStr, endStr, str;
+    int n;
+    cin >> n;
+    unordered_set<string> strSet;
+    cin >> beginStr >> endStr;
+    for (int i = 0; i < n; i++) {
+        cin >> str;
+        strSet.insert(str);
+    }
+
+    // 记录strSet里的字符串是否被访问过，同时记录路径长度
+    unordered_map<string, int> visitMap; // <记录的字符串，路径长度>
+
+    // 初始化队列
+    queue<string> que;
+    que.push(beginStr);
+
+    // 初始化visitMap
+    visitMap.insert(pair<string, int>(beginStr, 1));
+
+    while(!que.empty()) {
+        string word = que.front();
+        que.pop();
+        int path = visitMap[word]; // 这个字符串在路径中的长度
+
+        // 开始在这个str中，挨个字符去替换  解决 图中的线是如何连在一起的
+        for (int i = 0; i < word.size(); i++) {
+            string newWord = word; // 用一个新字符串替换str，因为每次要置换一个字符
+
+            // 遍历26的字母
+            for (int j = 0 ; j < 26; j++) {
+                newWord[i] = j + 'a';
+                if (newWord == endStr) { // 发现替换字母后，字符串与终点字符串相同
+                    cout <<  path + 1 << endl; // 找到了路径 
+                    return 0;
+                }
+                // 字符串集合里出现了newWord，并且newWord没有被访问过
+                if (strSet.find(newWord) != strSet.end()
+                        && visitMap.find(newWord) == visitMap.end()) {
+                    // 添加访问信息，并将新字符串放到队列中
+                    visitMap.insert(pair<string, int>(newWord, path + 1));
+                    que.push(newWord);
+                }
+            }
+        }
+    }
+
+    // 没找到输出0
+    cout << 0 << endl;
+
+}
+
+//105.有向图的完全联通
+// 写法一：dfs 处理当前访问的节点
+#include <iostream>
+#include <vector>
+#include <list>
+using namespace std;
+
+void dfs(const vector<list<int>>& graph, int key, vector<bool>& visited) {
+    if (visited[key]) {
+        return;
+    }
+    visited[key] = true;
+    list<int> keys = graph[key];
+    for (int key : keys) {
+        // 深度优先搜索遍历
+        dfs(graph, key, visited);
+    }
+}
+
+int main() {
+    int n, m, s, t;
+    cin >> n >> m;
+
+    // 节点编号从1到n，所以申请 n+1 这么大的数组
+    vector<list<int>> graph(n + 1); // 邻接表
+    while (m--) {
+        cin >> s >> t;
+        // 使用邻接表 ，表示 s -> t 是相连的
+        graph[s].push_back(t);
+    }
+    vector<bool> visited(n + 1, false);
+    dfs(graph, 1, visited);
+    //检查是否都访问到了
+    for (int i = 1; i <= n; i++) {
+        if (visited[i] == false) {
+            cout << -1 << endl;
+            return 0;
+        }
+    }
+    cout << 1 << endl;
+}
+
+//bfs
+#include <iostream>
+#include <vector>
+#include <list>
+#include <queue>
+using namespace std;
+
+int main() {
+    int n, m, s, t;
+    cin >> n >> m;
+
+    vector<list<int>> graph(n + 1);
+    while (m--) {
+        cin >> s >> t;
+        graph[s].push_back(t);
+
+    }
+    vector<bool> visited(n + 1, false);
+    visited[1] = true; //  1 号房间开始
+    queue<int> que;
+    que.push(1); //  1 号房间开始
+
+    // 广度优先搜索的过程
+    while (!que.empty()) {
+        int key = que.front(); que.pop();
+         list<int> keys = graph[key];
+         for (int key : keys) {
+             if (!visited[key]) {
+                 que.push(key);
+                 visited[key] = true;
+             }
+         }
+    }
+
+    for (int i = 1; i <= n; i++) {
+        if (visited[i] == false) {
+            cout << -1 << endl;
+            return 0;
+        }
+    }
+    cout << 1 << endl;
+}
+
