@@ -1,34 +1,16 @@
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
 class Solution {
-private:
-    vector<vector<string>> res;
-    vector<string> path;
-    vector<vector<bool>> isPalindrome;
-    void backtracking(const string& s, int start) {
-        if(star >= s.size()) {
-            res.push_back(path);
-            return;
-        }
-        for(int i = start; i < s.size(); i++) {
-            if(isPalindrome[start][i]) {
-                string str = s.substr(start, i - start + 1);
-                path.push_back(str);
-            }else {
-                continue;
-            }
-            backtracking(s, i + 1);
-            path.pop_back();
-        }
-    }
-    void computePalindrome(const string& s) {
-        isPalindrome.resize(s.size(),vector<bool>(s.size(),false));
-        for(int i = s.size() - 1; i >= 0; i--) {
-            for(int j = i; j < s.size(); j++) {
-                if()
-            }
-        }
-    }
- public:
-    vector<vector<string>> partition(string s) {
+public:
+    ListNode* removeElements(ListNode* head, int val) {
         
     }
 };

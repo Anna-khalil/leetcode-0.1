@@ -68,6 +68,8 @@
     "子序列系列": "cpp",
     "dp基础": "cpp",
     "打家劫舍": "cpp",
-    "股票系列": "cpp"
+    "股票系列": "cpp",
+    "minimum spanning tree": "cpp",
+    "union-find": "cpp"
   }
 }
