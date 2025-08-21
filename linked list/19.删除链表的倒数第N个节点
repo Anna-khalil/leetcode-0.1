@@ -4,7 +4,7 @@ public:
         ListNode* dummyHead = new ListNode(0);
         dummyHead->next = head;
         ListNode* slow = dummyHead;
-        ListNode* fast = dummyHead;
+        ListNode* fast = dummyHead;//fast指针测探 当fast触底时slow正好遇到该节点
         while(n-- && fast != NULL) {
             fast = fast->next;
         }

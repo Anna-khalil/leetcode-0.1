@@ -1,3 +1,4 @@
+//遍历
 class Solution {
 public:
     ListNode* removeElements(ListNode* head, int val) {
@@ -20,7 +21,7 @@ public:
 };
 
 
-
+//递归
 class Solution {
 public:
     ListNode* removeElements(ListNode* head, int val) {

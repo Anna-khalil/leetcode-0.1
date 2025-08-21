@@ -1,4 +1,4 @@
-//双指针法
+//双指针法 next指向翻转
 class Solution {
 public:
     ListNode* reverseList(ListNode* head) {
@@ -16,7 +16,7 @@ public:
     }
 };
 
-//递归法
+//递归法 nono
 class Solution {
 public:
     ListNode* reverse(ListNode* pre,ListNode* cur){
