@@ -70,6 +70,7 @@
     "打家劫舍": "cpp",
     "股票系列": "cpp",
     "minimum spanning tree": "cpp",
-    "union-find": "cpp"
+    "union-find": "cpp",
+    "栈和队列的相互实现": "cpp"
   }
 }

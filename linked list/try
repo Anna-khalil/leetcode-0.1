@@ -1,29 +1,17 @@
 /**
- * Definition for singly-linked list.
- * struct ListNode {
+ * Definition for a binary tree node.
+ * struct TreeNode {
  *     int val;
- *     ListNode *next;
- *     ListNode(int x) : val(x), next(NULL) {}
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
  * };
  */
 class Solution {
 public:
-    ListNode *detectCycle(ListNode *head) {
-        ListNode* fast = head;
-        ListNode* slow = head;
-        while(fast && fast -> next) {
-            slow = slow -> next;
-            fast = fast -> next -> next;
-            if(slow == fast) {
-                ListNode* p1 = head;
-                ListNode* p2 = slow;
-                while(p1 != p2) {
-                    p1 = p1 -> next;
-                    p2 = p2 -> next;
-                }
-                return p1;
-            }
-        }
-        return NULL;
+    int minDepth(TreeNode* root) {
+        
     }
 };

@@ -5,11 +5,13 @@ public:
         string t = s + s;
         t.erase(t.begin()); // 掐头去尾
         t.erase(t.end() - 1); //注意这里是end() - 1 
-        if (t.find(s) != std::string::npos) return true; // r
+        if (t.find(s) != std::string::npos) return true; // 如果找到，返回第一次出现的下标
+// 如果未找到，返回 std::string::npos（一个特殊静态常量，通常等于 size_t(-1)，数值很大）。
         return false;
     }
 };
 
+//不采取以下解法
 //kmp len = s.size()   k = next[len - 1] + 1   // 最长前缀后缀长度
 //若 k > 0 且 len % (len - k) == 0，则字符串可整除成若干段，每段长度为 len - k，即为周期。
 class Solution {

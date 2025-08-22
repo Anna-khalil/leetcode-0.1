@@ -2,12 +2,12 @@
 class Solution {
 public:
    vector<int> maxSlidingWindow(vector<int>& nums, int k) {
-        deque<int> q;
+        deque<int> q;//q内部  |队尾   队头| 队头永远最大
         vector<int> ans;
         for( int i = 0; i < nums.size(); i++ ){
-            if( !q.empty() && q.front() < i - k + 1 ) { q.pop_front(); }
-            while( !q.empty() && nums[i] >= nums[q.back()] ) { q.pop_back(); }
-            q.push_back(i);
+            if( !q.empty() && q.front() < i - k + 1 ) { q.pop_front(); }//窗口滑动
+            while( !q.empty() && nums[i] >= nums[q.back()] ) { q.pop_back(); }//维序
+            q.push_back(i);//队尾入列（此时已是有效队列（有序
             
             if( i >= k - 1 ) { ans.push_back(nums[q.front()]); }
         }

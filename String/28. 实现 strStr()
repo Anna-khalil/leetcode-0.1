@@ -1,4 +1,5 @@
 //前缀表统一减一 C++代码实现
+//kmp 找到最长前后缀
 class Solution {
 public:
     void getNext(int* next, const string& s) {

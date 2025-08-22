@@ -7,12 +7,12 @@ public:
     }
 
     //快慢指针把 “删除空格” 变成 “复制单词并手动插入空格”，从而 一次遍历 完成所有多余空格清理。
+    //手动控制了空格数量，永远不会出现连续空格。
     void removeExtraSpaces(string& s) {
         int slow = 0;   
-        for (int i = 0; i < s.size(); ++i) { //
-            if (s[i] != ' ') { //只要当前字符不是空格，就说明进入了一个单词区域。
+        for (int i = 0; i < s.size(); ++i) { 
+            if (s[i] != ' ') { //只有 当前字符不是空格，就说明进入了一个单词区域 才进行记录
 
-                //手动控制了空格数量，永远不会出现连续空格。
                 if (slow != 0) s[slow++] = ' '; //slow != 0 说明不是第一个单词，需要加一个空格分隔。
 
                 //继续把当前单词的所有字符原样复制到 slow 位置。
@@ -36,4 +36,39 @@ public:
         }
         return s;
     }
+};
+
+//使用库函数版本 reverse[begin,end)
+class Solution {
+public:
+    void remove_space(string& s) {
+        int slow = 0;
+        for(int i = 0; i < s.size(); i++) {
+            if(s[i] != ' ') {
+                if(slow != 0) s[slow++] = ' ';
+
+                while(i < s.size() && s[i] != ' ') {
+                    s[slow++] = s[i++];
+                }
+            }
+        }
+
+        s.resize(slow);
+    }
+
+    string reverseWords(string s) {
+        remove_space(s);
+        reverse(s.begin(),s.end());
+        int st = 0;
+        for(int i = 0; i <= s.size(); i++) {//这里取到s.size() 为了能翻转最后一个单词
+            if(i == s.size() || s[i] == ' ')
+            {
+                reverse(s.begin() + st,s.begin() + i);
+                st = i + 1;
+            }
+        }
+        return s;
+    }
+
+    
 };

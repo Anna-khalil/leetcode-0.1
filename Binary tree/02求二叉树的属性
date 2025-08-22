@@ -24,6 +24,7 @@ public:
         return compare(root->left, root->right);
     }
 };
+
 //2迭代
 //2.1queue
 class Solution {
@@ -83,7 +84,7 @@ public:
 //1.1递归
 class Solution {
 public:
-    int result;
+    int result;//全类变量
     void getdepth(TreeNode* node, int depth) {
         result = depth > result ? depth : result; // 中
         if (node->left == NULL && node->right == NULL) return ;
@@ -134,7 +135,7 @@ public:
         for (int i = 0; i < root->children.size(); i++) {
             depth = max (depth, maxDepth(root->children[i]));
         }
-        return depth + 1;
+        return depth + 1;//这里是每次递归数值变化的地方
     }
 };
 //2.1迭代

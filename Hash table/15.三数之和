@@ -17,7 +17,7 @@ public:
                 continue;
             }
             */
-            // 正确去重a方法
+            // 正确去重a方法 第一次可以允许 不许故技重施
             if (i > 0 && nums[i] == nums[i - 1]) {
                 continue;
             }

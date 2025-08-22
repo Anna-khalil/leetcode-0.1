@@ -2,7 +2,7 @@ class Solution {
 public:
     class mycomparison {
         public:
-        //小根堆
+        //小顶堆(小根堆)
             bool operator()(const pair<int, int>& lhs,const pair<int, int> &rhs) {
                 return lhs.second > rhs.second;
             }
@@ -20,8 +20,8 @@ public:
 
         for( auto &  kv : map ) {
             pq.push(kv);
-            if(pq.size() > k){
-                pq.pop();
+            if(pq.size() > k){//如果堆的大小大于了K，则队列弹出，保证堆的大小一直为k
+                pq.pop();//弹出最小（根）节点
             }
         }
 

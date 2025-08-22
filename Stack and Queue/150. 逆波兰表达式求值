@@ -1,3 +1,4 @@
+//对称范式使用stack
 class Solution {
 public:
     int evalRPN(vector<string>& tokens) {
@@ -14,7 +15,7 @@ public:
                 if (tokens[i] == "*") st.push(num2 * num1);
                 if (tokens[i] == "/") st.push(num2 / num1);
             } else {
-                st.push(stoll(tokens[i]));
+                st.push(stoll(tokens[i]));//把 std::string 转换成 long long 类型。
             }
         }
 
