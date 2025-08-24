@@ -11,7 +11,7 @@ public:
         return NULL;
     }
 };
-//2.1迭代
+//2.1迭代 不用记录 直接循环
 class Solution {
 public:
     TreeNode* searchBST(TreeNode* root, int val) {
@@ -40,7 +40,7 @@ public:
     bool isValidBST(TreeNode* root) {
         vec.clear(); // 不加这句在leetcode上也可以过，但最好加上
         traversal(root);
-        for (int i = 1; i < vec.size(); i++) {
+        for (int i = 1; i < vec.size(); i++) {//注意是从1开始
             // 注意要小于等于，搜索树里不能有相同元素
             if (vec[i] <= vec[i - 1]) return false;
         }
@@ -135,7 +135,7 @@ private:
         if (cur == NULL) return ;
 
         searchBST(cur->left);       // 左
-                                    // 中
+                                    // 中 计数操作 是否更新
         if (pre == NULL) { // 第一个节点
             count = 1;
         } else if (pre->val == cur->val) { // 与前一个节点数值相同

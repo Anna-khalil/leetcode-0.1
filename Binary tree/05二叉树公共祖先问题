@@ -3,16 +3,21 @@
 class Solution {
 public:
     TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
+        //从 root 往下走
         if (root == q || root == p || root == NULL) return root;
+        //分成左右子树判断
         TreeNode* left = lowestCommonAncestor(root->left, p, q);
         TreeNode* right = lowestCommonAncestor(root->right, p, q);
+        //左右都不为空 说明该节点就是公共祖先
         if (left != NULL && right != NULL) return root;
+        //否则返回不为空的一边作为祖先
         if (left == NULL) return right;
         return left;
     }
 };
 
 //235. 二叉搜索树的最近公共祖先
+//利用二叉树的性质
 class Solution {
 private:
     TreeNode* traversal(TreeNode* cur, TreeNode* p, TreeNode* q) {

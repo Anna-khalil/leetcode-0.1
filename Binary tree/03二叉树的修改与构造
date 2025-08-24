@@ -82,7 +82,8 @@ public:
 //每次分隔不用定义新的数组，而是通过下标索引直接在原数组上操作
 class Solution {
 private:
-        TreeNode* traversal (vector<int>& inorder, int inorderBegin, int inorderEnd, vector<int>& preorder, int preorderBegin, int preorderEnd) {
+        TreeNode* traversal (vector<int>& inorder, int inorderBegin, int inorderEnd, 
+                             vector<int>& preorder, int preorderBegin, int preorderEnd) {
         if (preorderBegin == preorderEnd) return NULL;
 
         int rootValue = preorder[preorderBegin]; // 注意用preorderBegin 不要用0
@@ -135,7 +136,7 @@ private:
 
         // 分割点下标：maxValueIndex
         int maxValueIndex = left;
-        for (int i = left + 1; i < right; ++i) {
+        for (int i = left + 1; i < right; ++i) {//这里right不能取 因为左闭右开
             if (nums[i] > nums[maxValueIndex]) maxValueIndex = i;
         }
 
@@ -171,6 +172,9 @@ public:
     }
 };
 //2.1 迭代 层序
+//使变化之后的树完全建立到树1上
+//做到  1.改变原节点（树1）数值 
+//     2.左子树 右子树(子树只需要考虑自己 空 复制树2 不空 两边加入待处理队列 )
 class Solution {
 public:
     TreeNode* mergeTrees(TreeNode* t1, TreeNode* t2) {

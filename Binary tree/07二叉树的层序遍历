@@ -14,7 +14,7 @@ public:
                 TreeNode* node = que.front();
                 que.pop();
                 vec.push_back(node->val);
-                if (node->left) que.push(node->left);
+                if (node->left) que.push(node->left);//将下一层的节点入队
                 if (node->right) que.push(node->right);
             }
             result.push_back(vec);
@@ -43,6 +43,7 @@ public:
 };
 
 //从下到上  reverse(res.begin(),res.end());
+//二维vector的翻转 不会反转内层 vector 的元素顺序
 
 //199.二叉树的右视图
 class Solution {
@@ -53,7 +54,7 @@ public:
         vector<int> vec;
         while(!q.empty()){
             int size = q.size();
-            for(int i=0; i < size; i++){
+            for(int i=0; i < size; i++){//每层2件事 1加入最右元素 2下层元素入队
                 TreeNode* node = q.front();
                 q.pop();
                 if(i == size - 1) vec.push_back(node -> val);//遍历每层最右的元素加入

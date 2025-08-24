@@ -42,7 +42,7 @@ void traversal(TreeNode* cur, vector<int>& vec) {
     vec.push_back(cur->val);    // 中
 }
 
-//02二叉树的迭代遍历 队列queue 循环写法叫 iterative
+//02二叉树的迭代遍历 循环写法叫 iterative
 //前序遍历
 class Solution {
 public:
@@ -62,7 +62,7 @@ public:
     }
 };
 
-//中序遍历
+//中序遍历 将整棵树压扁成一列
 class Solution {
 public:
     vector<int> inorderTraversal(TreeNode* root) {
@@ -70,10 +70,10 @@ public:
         stack<TreeNode*> st;
         TreeNode* cur = root;
         while (cur != NULL || !st.empty()) {
-            if (cur != NULL) { // 指针来访问节点，访问到最底层
+            if (cur != NULL) { // 指针来访问节点，访问到最底层的左叶子
                 st.push(cur); // 将访问的节点放进栈
                 cur = cur->left;                // 左
-            } else {
+            } else {//每访问到一次最底层的左叶子之后 开始弹出栈 + 加入右边节点
                 cur = st.top(); // 从栈里弹出的数据，就是要处理的数据（放进result数组里的数据）
                 st.pop();
                 result.push_back(cur->val);     // 中

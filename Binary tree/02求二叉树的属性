@@ -270,6 +270,7 @@ public:
         return result;
     }
 };
+
 //基于完全二叉树的节点计算 递归
 class Solution {
 public:
@@ -294,6 +295,7 @@ public:
 };
 
 //110.平衡二叉树
+//递归 后序遍历
 class Solution {
 public:
     // 返回以该节点为根节点的二叉树的高度，如果不是平衡二叉树了则返回-1
@@ -313,7 +315,7 @@ public:
 };
 
 //257. 二叉树的所有路径
-//1.1递归
+//1.1递归 前序遍历
 class Solution {
 private:
     void traversal(TreeNode* cur, vector<int>& path, vector<string>& result) {
@@ -371,7 +373,8 @@ public:
 
     }
 };
-//2.1迭代
+//2.1迭代 前序遍历
+//stack 后进先出 先遍历到叶子节点 注意stack先right后left
 class Solution {
 public:
     vector<string> binaryTreePaths(TreeNode* root) {
@@ -382,6 +385,8 @@ public:
         treeSt.push(root);
         pathSt.push(to_string(root->val));
         while (!treeSt.empty()) {
+            //以下两行取出 是为了叶子节点做准备 若不是叶子节点 则不会使用（但是会弹出
+            //这里没有节点的添加
             TreeNode* node = treeSt.top(); treeSt.pop(); // 取出节点 中
             string path = pathSt.top();pathSt.pop();    // 取出该节点对应的路径
             if (node->left == NULL && node->right == NULL) { // 遇到叶子节点
@@ -389,6 +394,7 @@ public:
             }
             if (node->right) { // 右
                 treeSt.push(node->right);
+                //注意迭代时 手动完成right部分的添加
                 pathSt.push(path + "->" + to_string(node->right->val));
             }
             if (node->left) { // 左
@@ -400,16 +406,18 @@ public:
     }
 };
 
-//404.左叶子之和
-//1.1递归
+//404.左叶子之和（路径最后那一个左叶子 所有之和
+//1.1递归 后序遍历（前序也行） 不对父节点操作（不能确定是不是左叶子
+//确定左叶子的操作是 在倒二层节点就确认 返回数值
 class Solution {
 public:
     int sumOfLeftLeaves(TreeNode* root) {
         if (root == NULL) return 0;
         if (root->left == NULL && root->right== NULL) return 0;
 
-        int leftValue = sumOfLeftLeaves(root->left);    // 左
-        if (root->left && !root->left->left && !root->left->right) { // 左子树就是一个左叶子的情况
+        int leftValue = sumOfLeftLeaves(root->left);    // 一般情况 左
+
+        if (root->left && !root->left->left && !root->left->right) { // 特殊情况 左子树就是一个左叶子的情况
             leftValue = root->left->val;
         }
         int rightValue = sumOfLeftLeaves(root->right);  // 右
@@ -418,7 +426,7 @@ public:
         return sum;
     }
 };
-//1.2精简版
+//1.2精简版 单独考虑倒二层的情况
 class Solution {
 public:
     int sumOfLeftLeaves(TreeNode* root) {
@@ -442,7 +450,7 @@ public:
             TreeNode* node = st.top();
             st.pop();
             if (node->left != NULL && node->left->left == NULL && node->left->right == NULL) {
-                result += node->left->val;
+                result += node->left->val;//只有通过倒二层的判断时 才添加左叶子
             }
             if (node->right) st.push(node->right);
             if (node->left) st.push(node->left);
@@ -453,6 +461,7 @@ public:
 
 //513找树左下角的值 
 //1.1递归 深度max+前序遍历
+//因为是前序遍历 先遇到左叶子 深度达到时就返回左叶子
 class Solution {
 public:
     int maxDepth = INT_MIN;
@@ -478,7 +487,7 @@ public:
         return result;
     }
 };
-//2.1迭代层序
+//2.1迭代层序 自上至下 使用queue
 class Solution {
 public:
     int findBottomLeftValue(TreeNode* root) {
@@ -490,7 +499,8 @@ public:
             for (int i = 0; i < size; i++) {
                 TreeNode* node = que.front();
                 que.pop();
-                if (i == 0) result = node->val; // 记录最后一行第一个元素
+                 // 每次都会记录最后一层第一个元素 但是按顺序 最后左叶子会覆盖
+                if (i == 0) result = node->val;
                 if (node->left) que.push(node->left);
                 if (node->right) que.push(node->right);
             }
@@ -500,7 +510,7 @@ public:
 };
 
 //112.路径总和
-//1.1递归
+//1.1递归 前序遍历
 class Solution {
 private:
     bool traversal(TreeNode* cur, int count) {//传入的cnt是扣除root val
