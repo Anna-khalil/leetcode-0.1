@@ -13,7 +13,7 @@ private:
         for (int i = startIndex; i < s.size(); i++) {
             if (isPalindrome[startIndex][i]) {   // 是回文子串
                 // 获取[startIndex,i]在s中的子串
-                string str = s.substr(startIndex, i - startIndex + 1);
+                string str = s.substr(startIndex, i - startIndex + 1);//+1 只有当前一个字母也是一个回文子串
                 path.push_back(str);
             } else {                                // 不是回文，跳过
                 continue;
@@ -59,7 +59,7 @@ private:
         }
         for (int i = startIndex; i < s.size(); i++) {
             if (isValid(s, startIndex, i)) { // 判断 [startIndex,i] 这个区间的子串是否合法
-                s.insert(s.begin() + i + 1 , '.');  // 在i的后面插入一个逗点
+                s.insert(s.begin() + i + 1 , '.');  // 在i的后面插入一个逗点 主动先增加空间
                 pointNum++;
                 backtracking(s, i + 2, pointNum);   // 插入逗点之后下一个子串的起始位置为i+2
                 pointNum--;                         // 回溯

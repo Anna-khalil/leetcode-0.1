@@ -1,4 +1,5 @@
 //376. 摆动序列
+//子序列 就是有顺序但是可能不连续
 //1.1贪心
 class Solution {
 public:
@@ -6,7 +7,7 @@ public:
         if (nums.size() <= 1) return nums.size();
         int curDiff = 0; // 当前一对差值
         int preDiff = 0; // 前一对差值
-        int result = 1;  // 记录峰值个数，序列默认序列最右边有一个峰值
+        int result = 1;  // 记录峰值个数，序列默认 只有一个数也算有一个峰值
         for (int i = 0; i < nums.size() - 1; i++) {
             curDiff = nums[i + 1] - nums[i];
             // 出现峰值
@@ -42,7 +43,7 @@ public:
 
 //738.单调递增的数字
 // 本题只要想清楚个例，例如98，一旦出现strNum[i - 1] > strNum[i]的情况（非单调递增），
-// 首先想让strNum[i - 1]减一，strNum[i]赋值9，这样这个整数就是89。就可以很自然想到对应的贪心解法了。
+// 首先想让strNum[i - 1]减一，i（包括）之后都赋值成9
 // 想到了贪心，还要考虑遍历顺序，只有从后向前遍历才能重复利用上次比较的结果。
 // 最后代码实现的时候，也需要一些技巧，例如用一个flag来标记从哪里开始赋值9。
 class Solution {

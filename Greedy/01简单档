@@ -2,7 +2,7 @@
 //局部最优就是大饼干喂给胃口大的，充分利用饼干尺寸喂饱一个，全局最优就是喂饱尽可能多的小孩。
 class Solution {
 public:
-    int findContentChildren(vector<int>& g, vector<int>& s) {
+    int findContentChildren(vector<int>& g, vector<int>& s) {//g胃口 s饼干
         sort(g.begin(), g.end());
         sort(s.begin(), s.end());
         int index = s.size() - 1; // 饼干数组的下标
@@ -68,7 +68,7 @@ public:
                     five--;
                     ten--;
                     twenty++; // 其实这行代码可以删了，因为记录20已经没有意义了，不会用20来找零
-                } else if (five >= 3) {
+                } else if (five >= 3) {//注意这里是else if严格规范（不然else无法匹配上一种
                     five -= 3;
                     twenty++; // 同理，这行代码也可以删了
                 } else return false;

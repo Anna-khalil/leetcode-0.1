@@ -67,15 +67,17 @@ public:
 };
 
 //图论额外拓展
+//实际上TLE
 //332.重新安排行程
 class Solution {
 private:
-// unordered_map<出发机场, map<到达机场, 航班次数>> targets
+// unordered_map<出发机场, map<到达机场, 航班次数>> targets 第二层使用map会自动排序
 unordered_map<string, map<string, int>> targets;
 bool backtracking(int ticketNum, vector<string>& result) {
-    if (result.size() == ticketNum + 1) {
+    if (result.size() == ticketNum + 1) {//经过的机场数量 == 航班总数 + 1
         return true;
     }
+    //注意这里只枚举res的最新机场
     for (pair<const string, int>& target : targets[result[result.size() - 1]]) {
         if (target.second > 0 ) { // 记录到达机场是否飞过了
             result.push_back(target.first);

@@ -37,7 +37,7 @@ public:
 
 //452. 用最少数量的箭引爆气球
 //为了让气球尽可能的重叠，需要对数组进行排序。
-// 如果气球重叠了，重叠气球中右边边界的最小值 之前的区间一定需要一个弓箭。
+// 如果气球重叠了，重叠气球中右边边界的最小值 之前的区间一定需要一个弓箭。 保证前一个的屁股能射击到
 class Solution {
 private:
     static bool cmp(const vector<int>& a, const vector<int>& b) {
@@ -50,10 +50,12 @@ public:
 
         int result = 1; // points 不为空至少需要一支箭
         for (int i = 1; i < points.size(); i++) {
-            if (points[i][0] > points[i - 1][1]) {  // 气球i和气球i-1不挨着，注意这里不是>=
+            //后一个头 与前一个屁股 不交叉
+            if (points[i][0] > points[i - 1][1]) {  // 气球i和气球i-1不挨着，注意这里不是>= 前一个屁股 够不着后一个头
                 result++; // 需要一支箭
             }
             else {  // 气球i和气球i-1挨着
+                //更新最新气球的最小屁股位置
                 points[i][1] = min(points[i - 1][1], points[i][1]); // 更新重叠气球最小右边界 要保证最左边的那个能射击到
             }
         }
@@ -61,7 +63,7 @@ public:
     }
 };
 
-//435. 无重叠区间
+//435. 无重叠区间  上一题弓箭的数量就是非交叉区间的数量
 class Solution {
 public:
     // 按照区间左边界排序
@@ -74,6 +76,7 @@ public:
 
         int result = 1; // points 不为空至少需要一支箭
         for (int i = 1; i < intervals.size(); i++) {
+            //注意 只在一点上接触的区间是 不重叠的。例如 [1, 2] 和 [2, 3] 是不重叠的。
             if (intervals[i][0] >= intervals[i - 1][1]) {
                 result++; // 需要一支箭
             }
@@ -163,7 +166,7 @@ public:
     int canCompleteCircuit(vector<int>& gas, vector<int>& cost) {
         for (int i = 0; i < cost.size(); i++) {
             int rest = gas[i] - cost[i]; // 记录剩余油量
-            int index = (i + 1) % cost.size();
+            int index = (i + 1) % cost.size();//往下走一站
             while (rest > 0 && index != i) { // 模拟以i为起点行驶一圈（如果有rest==0，那么答案就不唯一了）
                 rest += gas[index] - cost[index];
                 index = (index + 1) % cost.size();
@@ -204,7 +207,8 @@ public:
     }
 };
 //2.2局部贪心
-//那么局部最优：当前累加rest[i]的和curSum一旦小于0，起始位置至少要是i+1，因为从i之前开始一定不行。
+//那么局部最优：当前累加rest[i]的和curSum一旦小于0，起始位置至少要是i+1，
+// 因为从i之前开始一定不行。
 //全局最优：找到可以跑一圈的起始位置。
 class Solution {
 public:
@@ -234,9 +238,10 @@ public:
 class Solution {
 private:
     int result;
+    //这个递归算法是用来传输状态的 是否安装摄像的行为交给它的父节点
     int traversal(TreeNode* cur) {
 
-        // 空节点，该节点有覆盖
+        // 空节点，该节点有覆盖(叶子节点首先安排它的父节点安装摄像)
         if (cur == NULL) return 2;
 
         int left = traversal(cur->left);    // 左
@@ -265,7 +270,7 @@ private:
         if (left == 1 || right == 1) return 2;
 
         // 以上代码我没有使用else，主要是为了把各个分支条件展现出来，这样代码有助于读者理解
-        // 这个 return -1 逻辑不会走到这里。
+        // 这个 return -1 逻辑不会走到这里。 但是要堵漏
         return -1;
     }
 
