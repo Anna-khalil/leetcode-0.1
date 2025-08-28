@@ -1,11 +1,12 @@
 // 01背包
+//二维数组
 #include <bits/stdc++.h>
 using namespace std;
 
 int main() {
-    int n, bagweight;// bagweight代表行李箱空间
+    int n, volume;
 
-    cin >> n >> bagweight;
+    cin >> n >> volume;
 
     vector<int> weight(n, 0); // 存储每件物品所占空间
     vector<int> value(n, 0);  // 存储每件物品价值
@@ -17,24 +18,24 @@ int main() {
         cin >> value[j];
     }
     // dp数组, dp[i][j]代表行李箱空间为j的情况下,从下标为[0, i]的物品里面任意取,能达到的最大价值
-    vector<vector<int>> dp(weight.size(), vector<int>(bagweight + 1, 0));
+    vector<vector<int>> dp(weight.size(), vector<int>(volume + 1, 0));
 
-    // 初始化, 因为需要用到dp[i - 1]的值
+    // 初始化只考虑 第一件物品 的背包
     // j < weight[0]已在上方被初始化为0
     // j >= weight[0]的值就初始化为value[0]
-    for (int j = weight[0]; j <= bagweight; j++) {
+    for (int j = weight[0]; j <= volume; j++) {
         dp[0][j] = value[0];
     }
 
-    for(int i = 1; i < weight.size(); i++) { // 遍历科研物品
-        for(int j = 0; j <= bagweight; j++) { // 遍历行李箱容量
+    for(int i = 1; i < weight.size(); i++) { // 遍历科研物品 从第2件物品开始(下标1) 防止下标越界
+        for(int j = 0; j <= volume; j++) { // 遍历行李箱容量
             if (j < weight[i]) dp[i][j] = dp[i - 1][j]; // 如果装不下这个物品,那么就继承dp[i - 1][j]的值
             else {
                 dp[i][j] = max(dp[i - 1][j], dp[i - 1][j - weight[i]] + value[i]);
             }
         }
     }
-    cout << dp[n - 1][bagweight] << endl;
+    cout << dp[n - 1][volume] << endl;
 
     return 0;
 }
@@ -79,12 +80,13 @@ int main() {
 }
 
 //416. 分割等和子集
+//背包问题，不仅可以求 背包能被的最大价值，还可以求这个背包是否可以装满。
 class Solution {
 public:
     bool canPartition(vector<int>& nums) {
         int sum = 0;
 
-        // dp[i]中的 i 表示 背包内数字总和
+        // dp[i]中的 i 表示 背包内数字总和(下标与价值数值等同)
         // 题目中说：每个数组中的元素不会超过 100，数组的大小不会超过 200
         // 总和不会大于20000，背包最大只需要其中一半，所以10001大小就可以了
         vector<int> dp(10001, 0);
@@ -145,7 +147,7 @@ public:
         // 初始化最左列，最左列其他数值在递推公式中就完成了赋值
         dp[0][0] = 1; 
 
-        //物品数值就是0
+        //特殊情况 物品数值就是0 算数组里有t个0，然后按照组合数量求，即 2^t 
         int numZero = 0;
         for (int i = 0; i < nums.size(); i++) {
             if (nums[i] == 0) numZero++;
@@ -184,6 +186,7 @@ public:
 };
 
 //474.一和零
+//维度指标增加到2个 遍历物品在外层大循环中！ 所以两个维度都是倒着遍历
 class Solution {
 public:
     int findMaxForm(vector<string>& strs, int m, int n) {
@@ -191,7 +194,7 @@ public:
         vector<vector<int>> dp(m + 1, vector<int> (n + 1, 0)); // 默认初始化0
         //01背包 外层for循环遍历物品，内层for循环遍历背包容量且从后向前遍历
         //物品就是strs里的字符串，背包容量就是题目描述中的m和n。
-        for (string str : strs) { // 遍历物品
+        for (string str : strs) { // 遍历物品！ 更新考虑这个物品之后的最大子集数量
             int oneNum = 0, zeroNum = 0;
             for (char c : str) {
                 if (c == '0') zeroNum++;
@@ -199,6 +202,7 @@ public:
             }
             for (int i = m; i >= zeroNum; i--) { // 遍历背包容量且从后向前遍历！
                 for (int j = n; j >= oneNum; j--) {
+                    //是否加上这个str
                     dp[i][j] = max(dp[i][j], dp[i - zeroNum][j - oneNum] + 1);
                 }
             }
@@ -213,9 +217,9 @@ public:
 using namespace std;
 
 int main() {
-    int n, bagWeight;
+    int n, volume;
     int w, v;
-    cin >> n >> bagWeight;
+    cin >> n >> volume;
     vector<int> weight(n);
     vector<int> value(n);
     for (int i = 0; i < n; i++) {
@@ -223,20 +227,21 @@ int main() {
     }
 
     //dp[i][j] 表示从下标为[0-i]的物品，每个物品可以取无限次，放进容量为j的背包，价值总和最大是多少。
-    vector<vector<int>> dp(n, vector<int>(bagWeight + 1, 0));
+    vector<vector<int>> dp(n, vector<int>(volume + 1, 0));
 
-    // 初始化
-    for (int j = weight[0]; j <= bagWeight; j++)
+    // 初始化 dp[0][j] 如果能放下weight[0]的话，就一直装，每一种物品有无限个。
+    //cf 01背包 dp[0][j] = value[0];
+    for (int j = weight[0]; j <= volume; j++)
         dp[0][j] = dp[0][j - weight[0]] + value[0];
 
     for (int i = 1; i < n; i++) { // 遍历物品
-        for(int j = 0; j <= bagWeight; j++) { // 遍历背包容量
+        for(int j = 0; j <= volume; j++) { // 遍历背包容量
             if (j < weight[i]) dp[i][j] = dp[i - 1][j];
             else dp[i][j] = max(dp[i - 1][j], dp[i][j - weight[i]] + value[i]);
         }
     }
 
-    cout << dp[n - 1][bagWeight] << endl;
+    cout << dp[n - 1][volume] << endl;
 
     return 0;
 }
@@ -247,6 +252,7 @@ public:
     int change(int amount, vector<int>& coins) {
         int bagSize = amount;
 
+        //无符号的 64 位整数类型
         vector<vector<uint64_t>> dp(coins.size(), vector<uint64_t>(bagSize + 1, 0));
 
         // 初始化最上行
@@ -283,8 +289,9 @@ public:
 };
 
 //377. 组合总和 Ⅳ
-//如果求组合数就是外层for循环遍历物品，内层for遍历背包。
-//如果求排列数就是外层for遍历背包，内层for循环遍历物品。
+//求组合数就是外层for循环遍历物品，内层for遍历背包。
+//求排列数就是外层for遍历背包，内层for循环遍历物品。
+//leetcode没通过 一个失败
 class Solution {
 public:
     int combinationSum4(vector<int>& nums, int target) {
@@ -292,7 +299,8 @@ public:
         dp[0] = 1;
         for (int i = 0; i <= target; i++) { // 遍历背包
             for (int j = 0; j < nums.size(); j++) { // 遍历物品
-                //C++测试用例有两个数相加超过int的数据，所以需要在if里加上dp[i] < INT_MAX - dp[i - num]。
+                //C++测试用例有两个数相加超过int的数据，
+                //所以需要在if里加上dp[i] < INT_MAX - dp[i - num]。超过就不许加入
                 if (i - nums[j] >= 0 && dp[i] < INT_MAX - dp[i - nums[j]]) {
                     dp[i] += dp[i - nums[j]];
                 }
@@ -395,10 +403,12 @@ public:
         unordered_set<string> wordSet(wordDict.begin(), wordDict.end());
         vector<bool> dp(s.size() + 1, false);
         dp[0] = true;
-        //求排列
+        //求排列 从一个字母开始 逐步增加验证长度
         for (int i = 1; i <= s.size(); i++) {   // 遍历背包
-            for (int j = 0; j < i; j++) {       // 遍历物品
+            for (int j = 0; j < i; j++) {       // 遍历物品(切割刀落在前面第几个位置)
+                //截取片段从长到短 只要能被组成 即为true
                 string word = s.substr(j, i - j); //substr(起始位置，截取的个数)
+                //当前切割片段以及 切割之前的片段都能被表示
                 if (wordSet.find(word) != wordSet.end() && dp[j]) {
                     dp[i] = true;
                 }

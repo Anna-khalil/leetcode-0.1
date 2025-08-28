@@ -44,9 +44,10 @@ class Solution {
 public:
     int rob(TreeNode* root) {
         vector<int> result = robTree(root);
-        return max(result[0], result[1]);
+        return max(result[0], result[1]);//是否偷root
     }
     // 长度为2的数组，0：不偷，1：偷
+    //返回一组数据 共2个 分别是偷和不偷情况下
     vector<int> robTree(TreeNode* cur) {
         if (cur == NULL) return vector<int>{0, 0};
         vector<int> left = robTree(cur->left);
