@@ -1,5 +1,6 @@
 //98. 所有可达路径
 //dfs是可一个方向去搜，不到黄河不回头，直到遇到绝境了，搜不下去了，再换方向（换方向的过程就涉及到了回溯）。
+
 //邻接矩阵
 #include <iostream>
 #include <vector>
@@ -96,7 +97,7 @@ int main() {
     }
 }
 
-//99. 岛屿数量
+//99. 岛屿数量  
 //深搜 下一个节点是否能合法已经判断完了，传进dfs函数的就是合法节点。
 #include <iostream>
 #include <vector>
@@ -509,7 +510,7 @@ int main() {
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < m; j++) {
             // 如果这个节点，从第一组边界和第二组边界出发都遍历过，就是结果
-            if (firstBorder[i][j] && secondBorder[i][j]) cout << i << " " << j << endl;;
+            if (firstBorder[i][j] && secondBorder[i][j]) cout << i << " " << j << endl;
         }
     }
 }
@@ -693,6 +694,7 @@ int main() {
 
 //105.有向图的完全联通
 // 写法一：dfs 处理当前访问的节点
+//邻接表
 #include <iostream>
 #include <vector>
 #include <list>
@@ -734,6 +736,7 @@ int main() {
 }
 
 //bfs
+//邻接表
 #include <iostream>
 #include <vector>
 #include <list>

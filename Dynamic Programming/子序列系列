@@ -161,22 +161,30 @@ public:
 };
 
 //115.不同的子序列
-//dp[i][j]：以i-1为结尾的s子序列中出现以j-1为结尾的t的个数为dp[i][j]。
+//这道题目如果不是子序列，而是要求连续序列的，那就可以考虑用KMP。
+// 这道题目相对于72. 编辑距离，简单了不少，因为本题相当于只有删除操作，不用考虑替换增加之类的。
+//dp[i][j]：以i-1为结尾的s 子序列 中 出现以j-1为结尾的t的个数为dp[i][j]。
+// s：bagg 和 t：bag ，s[3] 和 t[2]是相同的，但是字符串s也可以不用s[3]来匹配，即用s[0]s[1]s[2]组成的bag。
+// 当然也可以用s[3]来匹配，即：s[0]s[1]s[3]组成的bag。
+// 所以当s[i - 1] 与 t[j - 1]相等时，dp[i][j] = dp[i - 1][j - 1] + dp[i - 1][j];
+// 当s[i - 1] 与 t[j - 1]不相等时，dp[i][j]只有一部分组成，不用s[i - 1]来匹配（就是模拟在s中删除这个元素），即：dp[i - 1][j]
 class Solution {
 public:
     int numDistinct(string s, string t) {//s长
         vector<vector<uint64_t>> dp(s.size() + 1, vector<uint64_t>(t.size() + 1));
-        ////dp[i][0] 表示：以i-1为结尾的s可以随便删除元素，出现空字符串的个数。
+        ////dp[i][0] 表示：以i-1为结尾的s可以随便删除元素（删除元素i)，出现空字符串的个数。(此时s只有元素i)
         //那么dp[i][0]一定都是1，因为也就是把以i-1为结尾的s，删除所有元素，出现空字符串的个数就是1。
-        for (int i = 0; i < s.size(); i++) dp[i][0] = 1;
+        for (int i = 0; i <= s.size(); i++) dp[i][0] = 1;
         //dp[0][j]：空字符串s可以随便删除元素，出现以j-1为结尾的字符串t的个数。
         //那么dp[0][j]一定都是0，s如论如何也变成不了t。
-        for (int j = 1; j < t.size(); j++) dp[0][j] = 0;
+        for (int j = 1; j <= t.size(); j++) dp[0][j] = 0;
 
         for (int i = 1; i <= s.size(); i++) {
             for (int j = 1; j <= t.size(); j++) {
                 if (s[i - 1] == t[j - 1]) {
+                    //在s中删去元素i后 能与以元素j结尾匹配的t的个数
                     dp[i][j] = dp[i - 1][j - 1] + dp[i - 1][j];//一部分是用s[i - 1]来匹配,一部分是不用s[i - 1]来匹配
+                    //模拟在s中删除元素i后，能与t匹配的个数 = 原来能匹配 + 删掉i后能匹配
                 } else {
                     dp[i][j] = dp[i - 1][j];
                 }
@@ -204,7 +212,7 @@ public:
 };
 
 //72. 编辑距离
-//dp[i][j] 表示以下标i-1为结尾的字符串word1，和以下标j-1为结尾的字符串word2，最近编辑距离为dp[i][j]。
+//dp[i][j] 表示以下标i-1为结尾的 字符串 word1，和以下标j-1为结尾的字符串word2，最近编辑距离为dp[i][j]。
 class Solution {
 public:
     int minDistance(string word1, string word2) {//把1变成2
@@ -239,7 +247,7 @@ public:
         }
         return result;
     }
-    int extend(const string& s, int i, int j, int n) {
+    int extend(const string& s, int i, int j, int n) {//右开区间
         int res = 0;
         while (i >= 0 && j < n && s[i] == s[j]) {
             i--;
@@ -260,7 +268,7 @@ public:
         vector<vector<int>> dp(s.size(), vector<int>(s.size(), 0));
         for (int i = 0; i < s.size(); i++) dp[i][i] = 1;
 
-        for (int i = s.size() - 1; i >= 0; i--) {
+        for (int i = s.size() - 1; i >= 0; i--) {//i往左走j往右走
             for (int j = i + 1; j < s.size(); j++) {
                 if (s[i] == s[j]) {
                     dp[i][j] = dp[i + 1][j - 1] + 2;
